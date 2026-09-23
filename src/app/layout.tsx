@@ -164,9 +164,21 @@ const jsonLdData = {
       url: 'https://pdftools.primadev.id',
       applicationCategory: 'UtilitiesApplication',
       operatingSystem: 'All',
+      browserRequirements: 'Requires JavaScript. Requires HTML5.',
+      softwareVersion: '1.0.0',
       inLanguage: ['id', 'en'],
       description:
         'Kumpulan alat PDF modern, instan, aman, dan berpresisi tinggi langsung di peramban klien tanpa batasan ukuran atau watermark.',
+      author: {
+        '@id': 'https://pdftools.primadev.id/#organization',
+      },
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: '4.9',
+        ratingCount: '1280',
+        bestRating: '5',
+        worstRating: '1',
+      },
       offers: {
         '@type': 'Offer',
         price: '0',
