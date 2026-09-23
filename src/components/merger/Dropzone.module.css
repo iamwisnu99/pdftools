@@ -1,0 +1,357 @@
+.dropzoneContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3.5rem 2rem;
+  border: 2px dashed var(--border-light);
+  border-radius: var(--radius-xl);
+  background: var(--bg-surface);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  min-height: 290px;
+}
+
+.dropzoneContainer:hover {
+  border-color: var(--accent-primary);
+  background: var(--bg-surface-hover);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+[data-theme='dark'] .dropzoneContainer {
+  background: var(--bg-surface);
+  border: 2px dashed rgba(255, 255, 255, 0.22);
+}
+
+[data-theme='dark'] .dropzoneContainer:hover {
+  background: var(--bg-surface-hover);
+  border-color: var(--accent-primary);
+}
+
+/* Modern Active Dragging State */
+.dropzoneActive {
+  border-color: var(--accent-primary) !important;
+  background: radial-gradient(circle at center, rgba(220, 38, 38, 0.12) 0%, rgba(220, 38, 38, 0.03) 70%) !important;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.28), 0 20px 45px rgba(220, 38, 38, 0.16) !important;
+  transform: scale(1.018);
+  animation: borderGlow 1.6s ease-in-out infinite alternate;
+}
+
+[data-theme='dark'] .dropzoneActive {
+  background: radial-gradient(circle at center, rgba(239, 68, 68, 0.16) 0%, rgba(15, 23, 42, 0.8) 75%) !important;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.35), 0 20px 50px rgba(239, 68, 68, 0.22) !important;
+}
+
+/* Prevent child flickering during drag over */
+.dropzoneActive * {
+  pointer-events: none;
+}
+
+.compactDropzoneActive * {
+  pointer-events: none;
+}
+
+@keyframes borderGlow {
+  0% {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.22), 0 10px 25px rgba(220, 38, 38, 0.12);
+  }
+  100% {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 6px rgba(220, 38, 38, 0.38), 0 22px 50px rgba(220, 38, 38, 0.25);
+  }
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.dropzoneIconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 5rem;
+  height: 5rem;
+  border-radius: var(--radius-xl);
+  background: var(--accent-primary-light);
+  color: var(--accent-primary);
+  margin-bottom: 1.5rem;
+  transition: transform var(--transition-fast);
+}
+
+.dropzoneContainer:hover .dropzoneIconWrapper {
+  transform: scale(1.08) translateY(-3px);
+}
+
+.dropzoneIcon {
+  color: var(--accent-primary);
+}
+
+.dropzoneTitle {
+  font-size: 1.375rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.dropzoneSubtitle {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
+.browseLink {
+  color: var(--accent-primary);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.dropzoneFooter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.footerPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.85rem;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+[data-theme='dark'] .footerPill {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-light);
+  color: var(--text-secondary);
+}
+
+/* Modern Drag Active Overlay & Animated Elements */
+.dragActiveOverlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  animation: overlayPop 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes overlayPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.92) translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.dragIconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 5.25rem;
+  height: 5.25rem;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--accent-primary) 0%, #b91c1c 100%);
+  color: #ffffff;
+  box-shadow: 0 10px 28px rgba(220, 38, 38, 0.42);
+  margin-bottom: 1.25rem;
+  animation: floatBob 2s ease-in-out infinite;
+}
+
+@keyframes floatBob {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-6px) scale(1.05);
+  }
+}
+
+.dragIconPulse {
+  color: #ffffff;
+}
+
+.dragFileCountBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 1.1rem;
+  border-radius: var(--radius-full);
+  background: rgba(220, 38, 38, 0.14);
+  border: 1.5px solid rgba(220, 38, 38, 0.35);
+  color: var(--accent-primary);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.65rem;
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+[data-theme='dark'] .dragFileCountBadge {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.45);
+  color: #fca5a5;
+}
+
+.sparkleIcon {
+  color: var(--accent-primary);
+}
+
+[data-theme='dark'] .sparkleIcon {
+  color: #fca5a5;
+}
+
+.dragActiveTitle {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 0.35rem;
+  letter-spacing: -0.02em;
+}
+
+.dragActiveSubtitle {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.25rem;
+  max-width: 520px;
+}
+
+.dragIndicatorPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 1.15rem;
+  border-radius: var(--radius-full);
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-light);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.indicatorCheckIcon {
+  color: var(--success);
+}
+
+/* Compact Dropzone Mode */
+.compactDropzone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  border: 2px dashed var(--border-light);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  cursor: pointer;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.compactDropzone:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  background: var(--bg-surface-hover);
+}
+
+[data-theme='dark'] .compactDropzone {
+  background: var(--bg-surface);
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+  color: var(--text-secondary);
+}
+
+[data-theme='dark'] .compactDropzone:hover {
+  background: var(--bg-surface-hover);
+  border-color: var(--accent-primary);
+  color: #ffffff;
+}
+
+.compactIcon {
+  color: var(--accent-primary);
+}
+
+/* Compact Active Dragging */
+.compactDropzoneActive {
+  border-color: var(--accent-primary) !important;
+  background: var(--accent-primary-light) !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.28) !important;
+  transform: scale(1.015);
+  animation: borderGlow 1.6s ease-in-out infinite alternate;
+}
+
+.compactActiveContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  width: 100%;
+  animation: overlayPop 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.compactPulseIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-full);
+  background: var(--accent-primary);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
+  animation: floatBob 1.8s ease-in-out infinite;
+}
+
+.compactDragActiveIcon {
+  color: #ffffff;
+}
+
+.compactActiveDetails {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.compactCountBadge {
+  display: inline-block;
+  font-weight: 700;
+  color: var(--accent-primary);
+  font-size: 0.9375rem;
+}
+
+[data-theme='dark'] .compactCountBadge {
+  color: #fca5a5;
+}
+
+.compactReadyText {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+@media (max-width: 640px) {
+  .compactActiveDetails {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+  }
+}

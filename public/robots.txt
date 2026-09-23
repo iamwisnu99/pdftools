@@ -1,0 +1,9 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Agentic Browser & LLM Discovery (Specification: https://llmstxt.org/)
+# LLM Context: https://pdftools.primadev.id/llms.txt
+# LLM Full Context: https://pdftools.primadev.id/llms-full.txt
+
+Sitemap: https://pdftools.primadev.id/sitemap.xml

@@ -1,0 +1,286 @@
+.footerWrapper {
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-light);
+  padding: 4.5rem 0 2.25rem;
+  margin-top: auto;
+  position: relative;
+  z-index: 10;
+}
+
+[data-theme='dark'] .footerWrapper {
+  background: #080d1a;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.footerInner {
+  display: flex;
+  flex-direction: column;
+  gap: 3.5rem;
+}
+
+/* =========================================================================
+   Main 4-Column Grid
+   ========================================================================= */
+.footerGrid {
+  display: grid;
+  grid-template-columns: 2.2fr 1.2fr 1.2fr 1.4fr;
+  gap: 3.5rem;
+  text-align: left;
+}
+
+/* Column 1: Brand */
+.brandCol {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.15rem;
+}
+
+.brandRow {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.brandIconBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+  flex-shrink: 0;
+}
+
+.brandImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.brandName {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+}
+
+.brandDesc {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+  max-width: 360px;
+  margin: 0;
+}
+
+.trustPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.95rem;
+  border-radius: var(--radius-full);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  color: var(--text-secondary);
+  font-size: 0.775rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+}
+
+[data-theme='dark'] .trustPill {
+  background: #0f172a;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.trustPillIcon {
+  color: var(--success);
+  flex-shrink: 0;
+}
+
+/* Column 2-4: Nav Columns */
+.navCol {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.colTitle {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0;
+}
+
+.legalTitleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.officialBadge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.1rem 0.45rem;
+  border-radius: var(--radius-sm);
+  background: rgba(220, 38, 38, 0.12);
+  color: var(--accent-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+[data-theme='dark'] .officialBadge {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+}
+
+.linkList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.navLink,
+.textBtnLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+}
+
+.navLink:hover,
+.textBtnLink:hover {
+  color: var(--accent-primary);
+  transform: translateX(3px);
+}
+
+.legalLink {
+  color: var(--text-secondary);
+}
+
+.legalLink:hover {
+  color: var(--accent-primary);
+}
+
+.legalLinkIcon {
+  color: var(--accent-primary);
+  opacity: 0.75;
+  transition: opacity var(--transition-fast);
+}
+
+.legalLink:hover .legalLinkIcon {
+  opacity: 1;
+}
+
+/* =========================================================================
+   Bottom Copyright & Operational Status Row
+   ========================================================================= */
+.bottomRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-light);
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+[data-theme='dark'] .bottomRow {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.copyrightText {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.systemStatusPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-full);
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--success);
+}
+
+.statusPulseDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 8px var(--success);
+  animation: pulseDot 2s infinite ease-in-out;
+}
+
+@keyframes pulseDot {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.75;
+  }
+}
+
+/* =========================================================================
+   Responsive Breakpoints
+   ========================================================================= */
+@media (max-width: 1024px) {
+  .footerGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+  }
+
+  .brandCol {
+    grid-column: span 2;
+    max-width: 100%;
+  }
+
+  .brandDesc {
+    max-width: 500px;
+  }
+}
+
+@media (max-width: 640px) {
+  .footerWrapper {
+    padding: 3.5rem 0 2rem;
+  }
+
+  .footerGrid {
+    grid-template-columns: 1fr;
+    gap: 2.25rem;
+  }
+
+  .brandCol {
+    grid-column: span 1;
+    align-items: flex-start;
+  }
+
+  .bottomRow {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}

@@ -1,0 +1,155 @@
+# PDF Tools — Full Technical & Agentic System Specification
+
+> Version: 2.1.0  
+> Target Audience: Autonomous AI Agents, Agentic Browsers, Web Crawlers, and Human Developers  
+> Host Application: PDF Tools (Client-Side Document Suite)  
+> Base URL: https://pdftools.primadev.id (or local development instance)
+
+---
+
+## 1. Executive Summary & Philosophy
+
+PDF Tools is an ultra-fast, privacy-first web platform dedicated to essential PDF operations. Unlike traditional online PDF services that require users to upload confidential documents to remote servers, PDF Tools performs 100% of its computations directly inside the user's browser runtime.
+
+### Core Tenets:
+1. **Zero-Knowledge Architecture**: Documents never leave the client device. No file transfer, no server-side cache, no database records.
+2. **Lossless Quality**: PDF compression packs object streams and strips structural redundancies without rasterizing vector text or downscaling embedded images.
+3. **High-Definition Conversion**: PDF-to-image extraction delivers up to 300 DPI high-definition outputs with multi-format support (PNG, JPG, WEBP).
+4. **No Artificial Constraints**: No file size caps, no daily quotas, no watermarks, and no mandatory account registration.
+
+---
+
+## 2. Technical Architecture & Security Model
+
+```
++---------------------------------------------------------------------------------+
+|                                 USER BROWSER                                    |
+|                                                                                 |
+|  +---------------------------------------------------------------------------+  |
+|  |                            Client Application                             |  |
+|  |    React 19 / Next.js 16 (App Router) + TypeScript + Vanilla CSS         |  |
+|  +---------------------------------------------------------------------------+  |
+|                                     |                                           |
+|         +---------------------------+---------------------------+               |
+|         |                                                       |               |
+|         v                                                       v               |
+|  +-------------------------+                         +-----------------------+  |
+|  |     pdf-lib (Wasm)      |                         |   pdfjs-dist + Canvas |  |
+|  | - PDF Assembly          |                         | - Page Rasterization  |  |
+|  | - Object Streams (Flate)|                         | - 150/300 DPI Scaling |  |
+|  | - Page Rotation/Extract |                         | - PNG/JPG/WEBP Export |  |
+|  +-------------------------+                         +-----------------------+  |
+|                                                                 |               |
+|                                                                 v               |
+|                                                      +-----------------------+  |
+|                                                      |     jszip (Memory)    |  |
+|                                                      | - Client-side ZIP     |  |
+|                                                      | - Batch image export  |  |
+|                                                      +-----------------------+  |
++---------------------------------------------------------------------------------+
+                                      |
+                         [ ZERO SERVER TRANSMISSION ]
+                                      |
+                                      v
+                                 Remote Cloud
+                              (0 KB Transferred)
+```
+
+### Invariants:
+- **Memory Sandbox**: All PDF parsing and binary manipulation occur within the browser tab's isolated V8/SpiderMonkey memory heap.
+- **Garbage Collection & Lifecycle**: Created `Blob` and `ObjectURL` references are revoked via `URL.revokeObjectURL()` immediately when modals or workspaces are closed. Canvas elements are dereferenced (`width = 0`, `height = 0`) to prevent memory leaks.
+- **Network Footprint**: Outgoing network traffic contains zero payload bytes related to document contents.
+
+---
+
+## 3. Tool Specifications & Workspaces
+
+### 3.1. Merge PDF (`/merge`)
+- **Route**: `/merge`
+- **Purpose**: Consolidate multiple PDF documents into a single document with granular page and rotation controls.
+- **Key Features**:
+  - Multi-file drag-and-drop queuing.
+  - Interactive reordering (drag to reorder or sort A-Z / Reverse).
+  - Page Selector Modal: View real-time rendered page thumbnails, pick individual pages, or enter range syntax (e.g., `1-4, 7, 10-12`).
+  - Rotation: Rotate individual pages or batch-rotate all pages in 90° clockwise increments (0°, 90°, 180°, 270°).
+  - Live Preview: Inspect the merged result in an integrated modal before downloading.
+- **Output**: Single combined PDF file with normalized page coordinates and merged cross-reference tables.
+
+### 3.2. Lossless Compress PDF (`/compress`)
+- **Route**: `/compress`
+- **Purpose**: Reduce PDF file size while preserving 100% of original visual fidelity.
+- **Technical Mechanism**:
+  - Incorporates PDF 1.5+ Object Streams (`useObjectStreams: true`) via `pdf-lib`.
+  - Re-encodes scattered non-stream objects into shared Flate-compressed streams.
+  - Strips redundant cross-reference entries, orphan dictionaries, and unnecessary producer metadata.
+  - Vector paths, TrueType/OpenType font definitions, and raster bitmaps are kept intact without downsampling.
+- **Handling Already-Optimized Files**:
+  - If a file is already packed at peak lossless efficiency (`compressedSize >= originalSize`), the system automatically retains the original byte stream and displays a helpful informational notice: *"File is Already Fully Optimized"*.
+- **Output**: Cleaned, compressed `.pdf` file with explicit before/after file size metrics and percentage savings.
+
+### 3.3. PDF to Image Converter (`/pdf-to-image`)
+- **Route**: `/pdf-to-image`
+- **Purpose**: Render PDF pages into individual image files.
+- **Supported Formats**:
+  1. `PNG` (`image/png`): Lossless rasterization, ideal for text-heavy documents and vector diagrams.
+  2. `JPG` (`image/jpeg`): Standard compression (0.85/0.95 quality) with solid white background flattening to eliminate transparency issues.
+  3. `WEBP` (`image/webp`): Next-gen format balancing high visual fidelity with compact file sizes.
+- **Quality & Resolution Levels**:
+  - **Standard (~150 DPI)**: Rendered at 1.5x viewport scale. Fast processing and lightweight file sizes suitable for web distribution and mobile screens.
+  - **High (300 DPI HD)**: Rendered at 2.5x viewport scale. Ultra-crisp typography and sharp image details suitable for professional printing and archival.
+- **Export Capabilities**:
+  - Per-image download button for each rendered page.
+  - In-browser ZIP creation via `JSZip` (`createImagesZip`), enabling one-click download of all pages without server interaction.
+- **Output**: Single image downloads or a structured `.zip` containing named images (e.g., `Document_hal_01.png`, `Document_hal_02.png`).
+
+---
+
+## 4. Internationalization & User Experience
+
+- **Supported Languages**:
+  - Indonesian (`id`): Human-crafted, natural terminology suitable for academic, legal, and enterprise contexts.
+  - English (`en`): Fluent, native idioms for global accessibility.
+- **Persistence**: User language preference is stored locally in `localStorage` under `pdf_tools_locale`.
+- **Theming**: Automatic detection of OS color scheme (`prefers-color-scheme`) with manual toggle between Light Mode and Dark Mode (`localStorage.getItem('pdf_tools_theme')`).
+
+---
+
+## 5. Agentic Browser Interaction Guidelines
+
+For autonomous AI browsers and automated testing agents navigating PDF Tools:
+
+### Identifying Key Interactive Elements:
+1. **Dropzone / File Upload**:
+   - Hidden file inputs can be targeted via `input[type="file"][accept*="pdf"]`.
+   - Visual dropzones respond to synthetic `drop` and `dragover` events.
+2. **Action Buttons**:
+   - Primary action buttons utilize class `.btn.btn-primary`.
+   - Merge button: `button:has-text("Gabungkan")` or `button:has-text("Merge")`.
+   - Compress button: `button:has-text("Kompres PDF Sekarang")` or `button:has-text("Compress PDF Now")`.
+   - Convert button: `button:has-text("Konversi Halaman ke Gambar")` or `button:has-text("Convert Pages to Images")`.
+   - ZIP download button: `button:has-text("Unduh Semua Halaman (.ZIP)")` or `button:has-text("Download All Pages (.ZIP)")`.
+3. **Execution Expectations**:
+   - Because all tasks run locally, completion times are typically sub-second for small files and 1–3 seconds for large multi-page files.
+   - Wait for progress indicators (`.progressBarFill` reaching 100%) before attempting to click download triggers.
+
+---
+
+## 6. Compliance & Legal Standard
+
+- **GDPR (Regulation EU 2016/679)**: Compliant with Article 25 (Data Protection by Design and by Default). Zero personal data is gathered, transmitted, or logged.
+- **Indonesian PDP Law (UU No. 27/2022)**: Complete adherence to data sovereignty and personal data confidentiality.
+- **Copyright & Ownership**: Users retain 100% intellectual property rights over all processed files. PDF Tools asserts zero license, title, or interest over processed content.
+
+---
+
+## 7. Sitemap & Endpoint Quick Reference
+
+| Route | Function | Primary Actions |
+|---|---|---|
+| `/` | Landing Hub | Overview of all tools, security badges, FAQs |
+| `/merge` | PDF Merger | Add PDFs, arrange order, rotate, preview, combine |
+| `/compress` | Lossless Compressor | Upload PDF, calculate savings, download optimized file |
+| `/pdf-to-image` | PDF to Image | Select format & DPI, convert pages, single/ZIP download |
+| `/legal` | Legal Documentation | Privacy policy, terms of service, compliance report |
+| `/llms.txt` | Condensed Agent Spec | Quick summary for LLM context injection |
+| `/llms-full.txt` | Full Technical Spec | Exhaustive technical & architectural reference |

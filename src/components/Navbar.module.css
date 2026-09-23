@@ -1,0 +1,420 @@
+.navbarWrapper {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: background var(--transition-base), border-color var(--transition-base);
+}
+
+.navbarInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 4.25rem;
+  gap: 1rem;
+}
+
+/* Brand Link */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+  color: inherit;
+  animation: navFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes navFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.brandIconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.375rem;
+  height: 2.375rem;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.28);
+  transition: transform var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.brandImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.brand:hover .brandIconWrapper {
+  transform: scale(1.05);
+}
+
+.brandText {
+  display: flex;
+  flex-direction: column;
+}
+
+.brandName {
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.brandSub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Back Button (Shown on all pages except Landing Page) */
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.45rem 1.15rem 0.45rem 0.55rem;
+  border-radius: 9999px;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-light);
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: navFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  user-select: none;
+}
+
+[data-theme='dark'] .backLink {
+  background: #151f32;
+  border-color: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+}
+
+.backIconCircle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.15rem;
+  height: 2.15rem;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+}
+
+[data-theme='dark'] .backIconCircle {
+  background: #1e293b;
+  color: #ffffff;
+}
+
+.backChevron {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.backText {
+  letter-spacing: -0.01em;
+  font-weight: 700;
+}
+
+.backLink:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  background: var(--accent-primary-light);
+  transform: translateX(-3px);
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.18);
+}
+
+[data-theme='dark'] .backLink:hover {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: #ef4444;
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.28);
+}
+
+.backLink:hover .backIconCircle {
+  background: var(--accent-gradient);
+  color: #ffffff;
+}
+
+.backLink:hover .backChevron {
+  transform: translateX(-3px);
+}
+
+/* Right Nav Actions */
+.navActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Language Switcher */
+.langWrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.langTrigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  height: 2.375rem;
+  padding: 0 0.5rem;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: color var(--transition-fast), transform var(--transition-fast);
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.langTrigger:hover {
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.langCode {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+}
+
+.langChevron {
+  color: var(--text-muted);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.langChevronOpen {
+  transform: rotate(180deg);
+}
+
+.langDropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  min-width: 175px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xl);
+  padding: 0.375rem;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  animation: navFadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+[data-theme='dark'] .langDropdown {
+  background: var(--bg-surface-elevated);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.7);
+}
+
+.langDropdownHeader {
+  padding: 0.4rem 0.65rem 0.25rem;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.langItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  text-align: left;
+}
+
+.langItemLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.langName {
+  font-weight: 600;
+}
+
+.langItem:hover {
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
+}
+
+[data-theme='dark'] .langItem:hover {
+  background: var(--bg-surface);
+}
+
+.langItemActive {
+  font-weight: 600;
+  color: var(--accent-primary);
+  background: var(--accent-primary-light);
+}
+
+.checkIcon {
+  color: var(--accent-primary);
+}
+
+/* Theme Toggle Button */
+.themeToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.375rem;
+  height: 2.375rem;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: color var(--transition-fast), transform var(--transition-fast);
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.themeToggle:hover {
+  color: var(--text-primary);
+  transform: scale(1.05);
+}
+
+.ctaBtn {
+  height: 2.375rem;
+  padding: 0 1.125rem;
+  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  line-height: 1;
+  text-decoration: none;
+  gap: 0.4rem;
+}
+
+.ctaText {
+  display: inline;
+}
+
+/* =========================================================================
+   Mobile & Responsive Adjustments
+   ========================================================================= */
+
+@media (max-width: 768px) {
+  /* Hide the long brand subtitle on tablet & mobile */
+  .brandSub {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .navbarInner {
+    height: 3.75rem;
+    padding-left: 0.875rem !important;
+    padding-right: 0.875rem !important;
+    gap: 0.5rem;
+  }
+
+  .brand {
+    gap: 0.5rem;
+  }
+
+  .brandIconWrapper {
+    width: 2.125rem;
+    height: 2.125rem;
+  }
+
+  .brandName {
+    font-size: 1.05rem;
+    letter-spacing: -0.015em;
+  }
+
+  .backLink {
+    padding: 0.35rem 0.85rem 0.35rem 0.4rem;
+    gap: 0.45rem;
+    font-size: 0.875rem;
+  }
+
+  .backIconCircle {
+    width: 1.85rem;
+    height: 1.85rem;
+  }
+
+  .navActions {
+    gap: 0.35rem;
+  }
+
+  .langTrigger {
+    height: 2.125rem;
+    padding: 0 0.35rem;
+    gap: 0.25rem;
+  }
+
+  .langCode {
+    font-size: 0.75rem;
+  }
+
+  .langDropdown {
+    right: 0;
+    min-width: 155px;
+    top: calc(100% + 0.35rem);
+  }
+
+  .themeToggle {
+    width: 2.125rem;
+    height: 2.125rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .ctaBtn {
+    height: 2.125rem;
+    padding: 0 0.75rem;
+    font-size: 0.8125rem;
+    gap: 0.35rem;
+  }
+}
+
+@media (max-width: 440px) {
+  .ctaText {
+    display: none;
+  }
+
+  .ctaBtn {
+    width: 2.125rem;
+    height: 2.125rem;
+    padding: 0;
+    border-radius: var(--radius-md);
+  }
+}

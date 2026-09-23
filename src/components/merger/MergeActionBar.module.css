@@ -1,0 +1,283 @@
+.actionBarContainer {
+  position: sticky;
+  bottom: 1.5rem;
+  z-index: 40;
+  margin-top: 2rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  overflow: hidden;
+  transition: all var(--transition-base);
+}
+
+.progressContainer {
+  background: var(--accent-primary-light);
+  border-bottom: 1px solid rgba(220, 38, 38, 0.2);
+  padding: 0.75rem 1.75rem;
+  position: relative;
+}
+
+.progressBar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 4px;
+  background: var(--accent-gradient);
+  transition: width 0.3s ease;
+}
+
+.progressInfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8125rem;
+  color: var(--accent-primary);
+  font-weight: 600;
+}
+
+.progressStatus {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.actionBarInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 1.5rem;
+  gap: 1.25rem;
+}
+
+/* Zone 1: Filename Config */
+.filenameConfig {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
+
+.filenameLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  user-select: none;
+}
+
+.filenameLabelIcon {
+  color: var(--accent-primary);
+}
+
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  height: 2.375rem;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  overflow: hidden;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.inputWrapper:focus-within {
+  border-color: var(--accent-primary);
+  background: var(--bg-surface);
+}
+
+[data-theme='dark'] .inputWrapper {
+  background: var(--bg-surface-elevated);
+  border-color: var(--border-light);
+}
+
+[data-theme='dark'] .inputWrapper:focus-within {
+  border-color: var(--accent-primary);
+}
+
+.filenameInput {
+  border: none;
+  background: transparent;
+  padding: 0 0.75rem;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  outline: none;
+  width: 180px;
+}
+
+.extBadge {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 0.625rem;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-left: 1px solid var(--border-light);
+  background: var(--bg-surface-hover);
+  user-select: none;
+}
+
+[data-theme='dark'] .extBadge {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+}
+
+/* Zone 2: Summary Stats Capsule */
+.summaryStats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.statCapsule {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.45rem 1rem;
+  border-radius: var(--radius-full);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+  transition: background var(--transition-base), border-color var(--transition-base);
+}
+
+[data-theme='dark'] .statCapsule {
+  background: var(--bg-surface-elevated);
+  border-color: var(--border-light);
+}
+
+.statGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+.statIcon {
+  color: var(--accent-primary);
+  flex-shrink: 0;
+}
+
+.statNumber {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.statLabel {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.statDivider {
+  width: 1px;
+  height: 14px;
+  background: var(--border-light);
+}
+
+/* Zone 3: Actions */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  flex-shrink: 0;
+}
+
+.resetBtn {
+  height: 2.375rem;
+  padding: 0 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.mergeBtn {
+  height: 2.375rem;
+  padding: 0 1.25rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  box-shadow: var(--shadow-accent);
+  white-space: nowrap;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 992px) {
+  .actionBarInner {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .filenameConfig {
+    order: 1;
+  }
+
+  .summaryStats {
+    order: 2;
+    justify-content: flex-end;
+  }
+
+  .actions {
+    order: 3;
+    width: 100%;
+    justify-content: flex-end;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-light);
+  }
+}
+
+@media (max-width: 640px) {
+  .actionBarInner {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1rem;
+  }
+
+  .filenameConfig,
+  .summaryStats,
+  .actions {
+    width: 100%;
+    order: unset;
+  }
+
+  .summaryStats {
+    justify-content: flex-start;
+  }
+
+  .filenameInput {
+    width: 100%;
+  }
+
+  .actions {
+    justify-content: stretch;
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .resetBtn {
+    flex: 1;
+  }
+
+  .mergeBtn {
+    flex: 2;
+  }
+}

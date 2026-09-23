@@ -1,0 +1,27 @@
+# PDF Tools
+
+> PDF Tools is an all-in-one, ultra-fast, 100% client-side private PDF utility platform. All operations—merging, lossless compression, and PDF-to-image conversion—execute locally in the user's browser memory via WebAssembly and Canvas. Zero server uploads, zero logs, zero watermarks, and no usage limits.
+
+## Core Capabilities & Tools
+
+- [PDF Merger](/merge): Combine multiple PDF documents into a single cohesive file. Features drag-and-drop reordering, high-res visual page thumbnails, custom page range extraction, and per-page 90°/180° rotation.
+- [Lossless PDF Compressor](/compress): Reduce PDF file size without degrading visual quality. Packs uncompressed objects into PDF 1.5+ Flate object streams and purges redundant metadata, keeping vector text and image resolutions 100% pixel-perfect.
+- [PDF to Image Converter](/pdf-to-image): Convert PDF pages into sharp PNG, JPG, or WEBP images. Offers Standard (~150 DPI) or High (300 DPI HD) quality, individual page downloads, and instant client-side ZIP archive bundling.
+- [Legal & Privacy Framework](/legal): Full documentation on the Zero-Knowledge client-side architecture, GDPR, and Indonesian PDP Law (UU No. 27/2022) compliance.
+
+## Key Architectural & Privacy Guarantees
+
+- **100% Client-Side Processing**: Executes entirely inside the browser's local sandbox using WebAssembly, `pdf-lib`, `pdfjs-dist`, and HTML5 Canvas API.
+- **Zero Server Uploads**: No PDF files, converted images, or file contents are ever transmitted over the network (0 KB server transfer).
+- **Zero Data Custody**: No account required, no tracking cookies, and no persistent server storage.
+- **Automated Memory Cleanup**: Browser memory is actively reclaimed upon operation completion to maintain optimal performance.
+- **Bilingual Support**: Fully localized with human-crafted Indonesian and English interfaces.
+
+## Application Routes
+
+- `/` : Landing Hub with direct access cards for all available PDF tools.
+- `/merge` : Dedicated interactive workspace for merging and ordering PDF files.
+- `/compress` : Dedicated workspace for lossless PDF file size reduction.
+- `/pdf-to-image` : Dedicated workspace for converting PDF pages to PNG/JPG/WEBP and ZIP export.
+- `/legal` : Full compliance and privacy policy documentation.
+- `/llms-full.txt` : Comprehensive technical documentation and agent interaction guide.

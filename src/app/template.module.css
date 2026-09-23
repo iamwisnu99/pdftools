@@ -1,0 +1,76 @@
+/* =========================================================================
+   Smooth Page Transition & Route Progress Bar
+   ========================================================================= */
+
+.pageTransitionWrapper {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-primary);
+}
+
+/* Glowing Top Route Progress Bar */
+.progressBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background: var(--accent-gradient);
+  box-shadow: 0 0 10px rgba(220, 38, 38, 0.75), 0 0 4px rgba(220, 38, 38, 0.9);
+  z-index: 99999;
+  transform-origin: left;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.progressBarActive {
+  animation: progressSweep 0.36s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes progressSweep {
+  0% {
+    transform: scaleX(0);
+    opacity: 1;
+  }
+  65% {
+    transform: scaleX(0.85);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+}
+
+/* Page Content Glide & Fade-in Animation */
+.pageContent {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  animation: pageSlideUp 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: opacity, transform;
+}
+
+@keyframes pageSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pageContent {
+    animation: none !important;
+  }
+  .progressBar {
+    display: none !important;
+  }
+}
