@@ -25,6 +25,9 @@ import {
   FileCheck,
   FileImage,
   Archive,
+  Scissors,
+  LockKeyhole,
+  Images,
 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import styles from './LandingView.module.css';
@@ -407,6 +410,60 @@ export default function LandingView({ onStartMerge }: LandingViewProps) {
               </div>
               <div className={styles.toolCardCta}>
                 <span>{t.toolCardPdfToImageCta}</span>
+                <ArrowRight size={16} />
+              </div>
+            </Link>
+
+            {/* Tool 4: Image to PDF */}
+            <Link href="/image-to-pdf" className={styles.toolCardItem}>
+              <div>
+                <div className={styles.toolCardTop}>
+                  <div className={styles.toolCardIconBox}>
+                    <Images size={26} />
+                  </div>
+                  <span className={styles.toolCardBadge}>{t.toolCardImageToPdfBadge}</span>
+                </div>
+                <h3 className={styles.toolCardTitle}>{t.toolCardImageToPdfTitle}</h3>
+                <p className={styles.toolCardDesc}>{t.toolCardImageToPdfDesc}</p>
+              </div>
+              <div className={styles.toolCardCta}>
+                <span>{t.toolCardImageToPdfCta}</span>
+                <ArrowRight size={16} />
+              </div>
+            </Link>
+
+            {/* Tool 5: Split PDF */}
+            <Link href="/split" className={styles.toolCardItem}>
+              <div>
+                <div className={styles.toolCardTop}>
+                  <div className={styles.toolCardIconBox}>
+                    <Scissors size={26} />
+                  </div>
+                  <span className={styles.toolCardBadge}>{t.toolCardSplitBadge}</span>
+                </div>
+                <h3 className={styles.toolCardTitle}>{t.toolCardSplitTitle}</h3>
+                <p className={styles.toolCardDesc}>{t.toolCardSplitDesc}</p>
+              </div>
+              <div className={styles.toolCardCta}>
+                <span>{t.toolCardSplitCta}</span>
+                <ArrowRight size={16} />
+              </div>
+            </Link>
+
+            {/* Tool 6: Protect PDF */}
+            <Link href="/protect" className={styles.toolCardItem}>
+              <div>
+                <div className={styles.toolCardTop}>
+                  <div className={styles.toolCardIconBox}>
+                    <LockKeyhole size={26} />
+                  </div>
+                  <span className={styles.toolCardBadge}>{t.toolCardProtectBadge}</span>
+                </div>
+                <h3 className={styles.toolCardTitle}>{t.toolCardProtectTitle}</h3>
+                <p className={styles.toolCardDesc}>{t.toolCardProtectDesc}</p>
+              </div>
+              <div className={styles.toolCardCta}>
+                <span>{t.toolCardProtectCta}</span>
                 <ArrowRight size={16} />
               </div>
             </Link>

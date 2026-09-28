@@ -12,6 +12,7 @@ import {
   Sparkles,
   Scissors,
   LockKeyhole,
+  Images,
 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import styles from './ToolsCatalog.module.css';
@@ -39,7 +40,7 @@ export default function ToolsCatalog() {
       cta: t.toolCardCompressCta,
       href: '/compress',
       icon: <Zap size={28} />,
-      pills: ['Object Streams', '100% Lossless', 'Vector Fonts Intact', 'Instant Stats'],
+      pills: ['Maksimal & Rekomendasi', 'Teks Tetap Bisa Dicari', 'Anti-Inflation', 'Instant Stats'],
     },
     {
       id: 'pdf-to-image',
@@ -50,6 +51,36 @@ export default function ToolsCatalog() {
       href: '/pdf-to-image',
       icon: <FileImage size={28} />,
       pills: ['PNG / JPG / WEBP', 'Standard & 300 DPI HD', 'Single Download', 'ZIP Export'],
+    },
+    {
+      id: 'image-to-pdf',
+      title: t.toolCardImageToPdfTitle,
+      desc: t.toolCardImageToPdfDesc,
+      badge: t.toolCardImageToPdfBadge,
+      cta: t.toolCardImageToPdfCta,
+      href: '/image-to-pdf',
+      icon: <Images size={28} />,
+      pills: ['JPG / PNG / WebP', 'A4 & Fit to Image', 'Atur Urutan Gambar', 'Margin Fleksibel'],
+    },
+    {
+      id: 'split',
+      title: t.toolCardSplitTitle,
+      desc: t.toolCardSplitDesc,
+      badge: t.toolCardSplitBadge,
+      cta: t.toolCardSplitCta,
+      href: '/split',
+      icon: <Scissors size={28} />,
+      pills: ['Ekstrak Rentang Halaman', 'Pisah Tiap Halaman', 'Visual Page Picker', 'Arsip ZIP'],
+    },
+    {
+      id: 'protect',
+      title: t.toolCardProtectTitle,
+      desc: t.toolCardProtectDesc,
+      badge: t.toolCardProtectBadge,
+      cta: t.toolCardProtectCta,
+      href: '/protect',
+      icon: <LockKeyhole size={28} />,
+      pills: ['Enkripsi Militer AES-256', 'Buka Sandi Dokumen', '100% Client-Side', 'Tanpa Server Upload'],
     },
   ];
 
@@ -72,7 +103,7 @@ export default function ToolsCatalog() {
         <div className={styles.headerSection}>
           <div className={styles.catalogBadge}>
             <Sparkles size={14} />
-            <span>PDF Tools Suite</span>
+            <span>PDF Tools Suite (6 Peralatan Lengkap)</span>
           </div>
 
           <h1 className={styles.catalogTitle}>{t.toolsCatalogTitle}</h1>
@@ -122,33 +153,6 @@ export default function ToolsCatalog() {
               </div>
             </Link>
           ))}
-        </div>
-
-        {/* Upcoming Tools Teaser */}
-        <div className={styles.upcomingSection}>
-          <div className={styles.upcomingHeader}>
-            <div className={styles.upcomingBadge}>{t.toolsUpcomingBadge}</div>
-            <h3 className={styles.upcomingTitle}>{t.toolsUpcomingTitle}</h3>
-            <p className={styles.upcomingDesc}>{t.toolsUpcomingDesc}</p>
-          </div>
-
-          <div className={styles.upcomingGrid}>
-            <div className={styles.upcomingCard}>
-              <div className={styles.upcomingCardIcon}>
-                <Scissors size={20} />
-              </div>
-              <h4 className={styles.upcomingCardTitle}>{t.toolUpcomingSplit}</h4>
-              <p className={styles.upcomingCardText}>{t.toolUpcomingSplitDesc}</p>
-            </div>
-
-            <div className={styles.upcomingCard}>
-              <div className={styles.upcomingCardIcon}>
-                <LockKeyhole size={20} />
-              </div>
-              <h4 className={styles.upcomingCardTitle}>{t.toolUpcomingProtect}</h4>
-              <p className={styles.upcomingCardText}>{t.toolUpcomingProtectDesc}</p>
-            </div>
-          </div>
         </div>
       </div>
     </div>

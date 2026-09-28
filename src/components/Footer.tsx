@@ -84,6 +84,24 @@ export default function Footer({ onStartMerge }: FooterProps) {
                 </Link>
               </li>
               <li>
+                <Link href="/image-to-pdf" className={styles.navLink}>
+                  <FileImage size={14} />
+                  <span>{t.footerLinkImageToPdf}</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/split" className={styles.navLink}>
+                  <RotateCw size={14} />
+                  <span>{t.footerLinkSplit}</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/protect" className={styles.navLink}>
+                  <Lock size={14} />
+                  <span>{t.footerLinkProtect}</span>
+                </Link>
+              </li>
+              <li>
                 <a href="/#fitur" className={styles.navLink}>
                   <Eye size={14} />
                   <span>{t.footerLinkPreview}</span>

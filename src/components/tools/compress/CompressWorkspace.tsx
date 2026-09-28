@@ -5,7 +5,6 @@ import confetti from 'canvas-confetti';
 import {
   FileText,
   Upload,
-  ArrowRight,
   Download,
   ExternalLink,
   RotateCcw,
@@ -13,13 +12,12 @@ import {
   ShieldCheck,
   Zap,
   Info,
-  Layers,
   Sparkles,
   X,
 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { compressPDF } from '@/lib/pdf-compressor';
-import { CompressProgress, CompressResult } from '@/types/compress';
+import { CompressionLevel, CompressProgress, CompressResult } from '@/types/compress';
 import { PDFDocument } from 'pdf-lib';
 import styles from './CompressWorkspace.module.css';
 
@@ -40,6 +38,8 @@ export default function CompressWorkspace() {
   const [pageCount, setPageCount] = useState<number>(0);
   const [isDragging, setIsDragging] = useState(false);
   const [isCompressing, setIsCompressing] = useState(false);
+  const [compressionLevel, setCompressionLevel] = useState<CompressionLevel>('recommended');
+  const [preserveText, setPreserveText] = useState(true);
   const [progress, setProgress] = useState<CompressProgress>({ percentage: 0, statusText: '' });
   const [result, setResult] = useState<CompressResult | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -86,19 +86,26 @@ export default function CompressWorkspace() {
 
     setIsCompressing(true);
     setErrorMsg(null);
-    setProgress({ percentage: 10, statusText: t.compressingStatus });
+    setProgress({ percentage: 5, statusText: t.compressingStatus });
 
     try {
-      const compressResult = await compressPDF(selectedFile, (p) => {
-        setProgress(p);
-      });
+      const compressResult = await compressPDF(
+        selectedFile,
+        {
+          level: compressionLevel,
+          preserveText,
+        },
+        (p) => {
+          setProgress(p);
+        }
+      );
 
       setResult(compressResult);
 
       if (compressResult.savedBytes > 0) {
         confetti({
-          particleCount: 50,
-          spread: 60,
+          particleCount: 65,
+          spread: 70,
           origin: { y: 0.65 },
         });
       }
@@ -134,6 +141,19 @@ export default function CompressWorkspace() {
   const handleOpenNewTab = () => {
     if (!result) return;
     window.open(result.url, '_blank');
+  };
+
+  const getLevelLabel = (lvl: CompressionLevel) => {
+    switch (lvl) {
+      case 'extreme':
+        return t.compressModeExtremeTitle;
+      case 'recommended':
+        return t.compressModeRecommendedTitle;
+      case 'light':
+        return t.compressModeLightTitle;
+      case 'lossless':
+        return t.compressModeLosslessTitle;
+    }
   };
 
   return (
@@ -228,30 +248,103 @@ export default function CompressWorkspace() {
                 )}
               </div>
 
-              {/* Compression Mode Details */}
+              {/* Compression Mode Selection Grid */}
               <div className={styles.settingsBox}>
                 <div className={styles.settingsHeader}>
-                  <div className={styles.settingsTitle}>
-                    <Sparkles size={18} className="text-primary" />
-                    <span>{t.compressLosslessTitle}</span>
+                  <div className={styles.settingsTitleRow}>
+                    <Zap size={18} className="text-primary" />
+                    <span>{t.compressModeTitle}</span>
                   </div>
-                  <span className={styles.modeBadge}>Lossless 100%</span>
+                  <p className={styles.settingsSubtitle}>{t.compressModeSubtitle}</p>
                 </div>
-                <p className={styles.settingsDesc}>{t.compressLosslessDesc}</p>
-                <div className={styles.featuresPills}>
-                  <div className={styles.pillItem}>
-                    <CheckCircle2 size={14} className={styles.pillCheck} />
-                    <span>Teks Vektor Tetap Tajam</span>
+
+                <div className={styles.modeGrid}>
+                  {/* Mode 1: Extreme */}
+                  <div
+                    className={`${styles.modeCard} ${compressionLevel === 'extreme' ? styles.modeCardActive : ''}`}
+                    onClick={() => !isCompressing && setCompressionLevel('extreme')}
+                  >
+                    <div className={styles.modeCardTop}>
+                      <div className={styles.modeIconBox}>
+                        <Zap size={18} />
+                      </div>
+                      <span className={styles.modeBadge}>{t.compressModeExtremeBadge}</span>
+                    </div>
+                    <h4 className={styles.modeCardTitle}>{t.compressModeExtremeTitle}</h4>
+                    <p className={styles.modeCardDesc}>{t.compressModeExtremeDesc}</p>
                   </div>
-                  <div className={styles.pillItem}>
-                    <CheckCircle2 size={14} className={styles.pillCheck} />
-                    <span>Resolusi Gambar Asli 100%</span>
+
+                  {/* Mode 2: Recommended */}
+                  <div
+                    className={`${styles.modeCard} ${compressionLevel === 'recommended' ? styles.modeCardActive : ''}`}
+                    onClick={() => !isCompressing && setCompressionLevel('recommended')}
+                  >
+                    <div className={styles.modeCardTop}>
+                      <div className={styles.modeIconBox}>
+                        <Sparkles size={18} />
+                      </div>
+                      <span className={styles.modeBadge}>{t.compressModeRecommendedBadge}</span>
+                    </div>
+                    <h4 className={styles.modeCardTitle}>{t.compressModeRecommendedTitle}</h4>
+                    <p className={styles.modeCardDesc}>{t.compressModeRecommendedDesc}</p>
                   </div>
-                  <div className={styles.pillItem}>
-                    <CheckCircle2 size={14} className={styles.pillCheck} />
-                    <span>Flate Object Streams Compression</span>
+
+                  {/* Mode 3: Light */}
+                  <div
+                    className={`${styles.modeCard} ${compressionLevel === 'light' ? styles.modeCardActive : ''}`}
+                    onClick={() => !isCompressing && setCompressionLevel('light')}
+                  >
+                    <div className={styles.modeCardTop}>
+                      <div className={styles.modeIconBox}>
+                        <CheckCircle2 size={18} />
+                      </div>
+                      <span className={styles.modeBadge}>{t.compressModeLightBadge}</span>
+                    </div>
+                    <h4 className={styles.modeCardTitle}>{t.compressModeLightTitle}</h4>
+                    <p className={styles.modeCardDesc}>{t.compressModeLightDesc}</p>
+                  </div>
+
+                  {/* Mode 4: Lossless */}
+                  <div
+                    className={`${styles.modeCard} ${compressionLevel === 'lossless' ? styles.modeCardActive : ''}`}
+                    onClick={() => !isCompressing && setCompressionLevel('lossless')}
+                  >
+                    <div className={styles.modeCardTop}>
+                      <div className={styles.modeIconBox}>
+                        <ShieldCheck size={18} />
+                      </div>
+                      <span className={styles.modeBadge}>{t.compressModeLosslessBadge}</span>
+                    </div>
+                    <h4 className={styles.modeCardTitle}>{t.compressModeLosslessTitle}</h4>
+                    <p className={styles.modeCardDesc}>{t.compressModeLosslessDesc}</p>
                   </div>
                 </div>
+
+                {/* Preserve Searchable Text Toggle (when not lossless) */}
+                {compressionLevel !== 'lossless' && (
+                  <div
+                    className={styles.textToggleCard}
+                    onClick={() => !isCompressing && setPreserveText(!preserveText)}
+                  >
+                    <input
+                      type="checkbox"
+                      id="preserveTextCheckbox"
+                      className={styles.textToggleCheckbox}
+                      checked={preserveText}
+                      disabled={isCompressing}
+                      onChange={(e) => setPreserveText(e.target.checked)}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    <div>
+                      <label htmlFor="preserveTextCheckbox" className={styles.textToggleLabel}>
+                        {t.compressPreserveTextTitle}
+                      </label>
+                      <span className={styles.textToggleHint}>
+                        {t.compressPreserveTextDesc}
+                      </span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Progress Bar when compressing */}
@@ -293,6 +386,12 @@ export default function CompressWorkspace() {
                 </div>
                 <h2 className={styles.resultTitle}>{t.compressSuccessTitle}</h2>
                 <p className={styles.resultSubtitle}>{t.compressSuccessSubtitle}</p>
+                <div style={{ marginTop: '0.75rem' }}>
+                  <span className={styles.levelTag}>
+                    <Sparkles size={14} />
+                    <span>Profil: {getLevelLabel(result.level)}</span>
+                  </span>
+                </div>
               </div>
 
               {/* Statistics Grid */}
@@ -312,7 +411,9 @@ export default function CompressWorkspace() {
                 <div className={styles.statCard}>
                   <div className={styles.statLabel}>{t.compressSaved}</div>
                   <div className={`${styles.statValue} ${styles.statValueHighlight}`}>
-                    {result.savedPercentage > 0 ? `-${result.savedPercentage}%` : 'Optimal'}
+                    {result.savedPercentage > 0
+                      ? `-${result.savedPercentage}% (${formatBytes(result.savedBytes)})`
+                      : 'Optimal'}
                   </div>
                 </div>
               </div>

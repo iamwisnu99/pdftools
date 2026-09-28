@@ -186,8 +186,11 @@ const jsonLdData = {
       },
       featureList: [
         'Penggabungan PDF Cepat (Fast PDF Merging)',
-        'Kompresi PDF Lossless (Lossless PDF Compression)',
+        'Kompresi PDF Maksimal & Rekomendasi (Maximum & Balanced PDF Compression)',
         'Konversi PDF ke Gambar PNG/JPG/WEBP (PDF to Image)',
+        'Konversi Gambar ke PDF (Image to PDF)',
+        'Pemisahan & Ekstraksi Halaman PDF (Split PDF)',
+        'Kunci & Buka Sandi PDF AES-256 (Protect & Unlock PDF)',
         'Susun Ulang Berkas Drag & Drop (Drag & Drop Reordering)',
         'Seleksi & Filter Halaman (Page Selection)',
         'Rotasi Orientasi Halaman 90° (Page Rotation)',
@@ -227,7 +230,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" suppressHydrationWarning>
+    <html lang="id" suppressHydrationWarning className={`${plusJakartaSans.variable} ${jetbrainsMono.variable}`}>
       <head>
         {/* Anti-Flicker Synchronous Theme Initializer (Prevents Blank White/Black Flash on Back Navigation & Reload) */}
         <script
@@ -255,7 +258,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdData) }}
         />
       </head>
-      <body className={`${plusJakartaSans.variable} ${jetbrainsMono.variable}`}>
+      <body className={`${plusJakartaSans.className} antialiased`}>
         <Analytics />
         <SpeedInsights />
         <LanguageProvider>
