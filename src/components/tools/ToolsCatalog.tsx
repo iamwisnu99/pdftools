@@ -9,7 +9,6 @@ import {
   ArrowRight,
   ShieldCheck,
   Search,
-  Sparkles,
   Scissors,
   LockKeyhole,
   Images,
@@ -101,11 +100,6 @@ export default function ToolsCatalog() {
       <div className="container">
         {/* Header Section */}
         <div className={styles.headerSection}>
-          <div className={styles.catalogBadge}>
-            <Sparkles size={14} />
-            <span>PDF Tools Suite (6 Peralatan Lengkap)</span>
-          </div>
-
           <h1 className={styles.catalogTitle}>{t.toolsCatalogTitle}</h1>
           <p className={styles.catalogSubtitle}>{t.toolsCatalogSubtitle}</p>
 

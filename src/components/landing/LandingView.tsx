@@ -67,48 +67,49 @@ export default function LandingView({ onStartMerge }: LandingViewProps) {
       {/* Hero Section */}
       <section className={styles.heroSection}>
         <div className="container">
-          <h1 className={styles.heroTitle}>
-            {t.heroTitlePart1}
-            <span className="text-gradient">{t.heroTitleGradient}</span>
-          </h1>
+          <div className={styles.heroGrid}>
+            {/* Left Column: Hero Content & Trust Indicators */}
+            <div className={styles.heroLeft}>
+              <h1 className={styles.heroTitle}>
+                {t.heroTitlePart1}
+                <span className="text-gradient">{t.heroTitleGradient}</span>
+              </h1>
 
-          <p className={styles.heroSubtitle}>{t.heroSubtitle}</p>
+              <p className={styles.heroSubtitle}>{t.heroSubtitle}</p>
 
-          <div className={styles.heroCtaGroup}>
-            <Link href="/tools" className={`btn btn-primary btn-lg ${styles.mainCtaBtn}`}>
-              <span>{t.heroCtaStart}</span>
-              <ArrowRight size={18} />
-            </Link>
-            <a href="#peralatan" className="btn btn-secondary btn-lg">
-              {t.heroCtaCatalog}
-            </a>
-          </div>
+              <div className={styles.heroCtaGroup}>
+                <Link href="/tools" className={`btn btn-primary btn-lg ${styles.mainCtaBtn}`}>
+                  <span>{t.heroCtaStart}</span>
+                  <ArrowRight size={18} />
+                </Link>
+                <a href="#peralatan" className="btn btn-secondary btn-lg">
+                  {t.heroCtaCatalog}
+                </a>
+              </div>
 
-          {/* Micro Trust Indicators */}
-          <div className={styles.trustPills}>
-            <div className={styles.trustItem}>
-              <FileText size={16} className={styles.trustIconAccent} />
-              <span>{t.trustQuality}</span>
+              {/* Micro Trust Indicators - 2 on left, 2 on right with minimalist check icons */}
+              <div className={styles.trustGrid}>
+                <div className={styles.trustItem}>
+                  <Check size={16} strokeWidth={2.5} className={styles.trustCheckIcon} />
+                  <span>{t.trustQuality}</span>
+                </div>
+                <div className={styles.trustItem}>
+                  <Check size={16} strokeWidth={2.5} className={styles.trustCheckIcon} />
+                  <span>{t.trustRotate}</span>
+                </div>
+                <div className={styles.trustItem}>
+                  <Check size={16} strokeWidth={2.5} className={styles.trustCheckIcon} />
+                  <span>{t.trustInstant}</span>
+                </div>
+                <div className={styles.trustItem}>
+                  <Check size={16} strokeWidth={2.5} className={styles.trustCheckIcon} />
+                  <span>{t.trustNoLimits}</span>
+                </div>
+              </div>
             </div>
-            <div className={styles.trustDot} />
-            <div className={styles.trustItem}>
-              <Zap size={16} className={styles.trustIconAccent} />
-              <span>{t.trustInstant}</span>
-            </div>
-            <div className={styles.trustDot} />
-            <div className={styles.trustItem}>
-              <Layers size={16} className={styles.trustIconAccent} />
-              <span>{t.trustRotate}</span>
-            </div>
-            <div className={styles.trustDot} />
-            <div className={styles.trustItem}>
-              <CheckCircle2 size={16} className={styles.trustIconSuccess} />
-              <span>{t.trustNoLimits}</span>
-            </div>
-          </div>
 
-          {/* Visual Showcase Card with Interactive Multi-Tool Tabs */}
-          <div className={styles.heroShowcaseWrapper}>
+            {/* Right Column: Visual Showcase Card */}
+            <div className={styles.heroShowcaseWrapper}>
             <div className={styles.showcaseCard}>
               <div className={styles.showcaseHeader}>
                 <div className={styles.showcaseDots}>
@@ -349,6 +350,7 @@ export default function LandingView({ onStartMerge }: LandingViewProps) {
             </div>
           </div>
         </div>
+      </div>
       </section>
 
       {/* Featured Tools Grid Section */}
