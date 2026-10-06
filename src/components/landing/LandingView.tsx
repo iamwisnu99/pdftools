@@ -56,12 +56,10 @@ export default function LandingView({ onStartMerge }: LandingViewProps) {
 
   return (
     <div className={styles.landingContainer}>
-      {/* Smooth Background Ambient Glow */}
-      <div className={styles.ambientMeshContainer} aria-hidden="true">
-        <div className={styles.ambientBlob1} />
-        <div className={styles.ambientBlob2} />
-        <div className={styles.ambientBlob3} />
-        <div className={styles.ambientGrid} />
+      {/* Subtle Engineered Backdrop (Clean Studio Light, No Neon Blobs) */}
+      <div className={styles.heroBackdrop} aria-hidden="true">
+        <div className={styles.heroSubtleGlow} />
+        <div className={styles.heroSubtleGrid} />
       </div>
 
       {/* Hero Section */}
@@ -72,7 +70,7 @@ export default function LandingView({ onStartMerge }: LandingViewProps) {
             <div className={styles.heroLeft}>
               <h1 className={styles.heroTitle}>
                 {t.heroTitlePart1}
-                <span className="text-gradient">{t.heroTitleGradient}</span>
+                <span className={styles.heroTitleAccent}>{t.heroTitleGradient}</span>
               </h1>
 
               <p className={styles.heroSubtitle}>{t.heroSubtitle}</p>
@@ -82,275 +80,267 @@ export default function LandingView({ onStartMerge }: LandingViewProps) {
                   <span>{t.heroCtaStart}</span>
                   <ArrowRight size={18} />
                 </Link>
-                <a href="#peralatan" className="btn btn-secondary btn-lg">
+                <a href="#peralatan" className={`btn btn-secondary btn-lg ${styles.secondaryCtaBtn}`}>
                   {t.heroCtaCatalog}
                 </a>
               </div>
 
-              {/* Micro Trust Indicators - 2 on left, 2 on right with minimalist check icons */}
-              <div className={styles.trustGrid}>
+              {/* Minimalist Professional Trust Bar (Single Elegant Horizontal Strip) */}
+              <div className={styles.trustRow}>
                 <div className={styles.trustItem}>
-                  <Check size={16} strokeWidth={2.5} className={styles.trustCheckIcon} />
-                  <span>{t.trustQuality}</span>
+                  <Lock size={15} strokeWidth={2.2} className={styles.trustIcon} />
+                  <span>{t.heroTrustPrivate}</span>
                 </div>
+                <span className={styles.trustDividerDot} aria-hidden="true">•</span>
                 <div className={styles.trustItem}>
-                  <Check size={16} strokeWidth={2.5} className={styles.trustCheckIcon} />
-                  <span>{t.trustRotate}</span>
+                  <Zap size={15} strokeWidth={2.2} className={styles.trustIcon} />
+                  <span>{t.heroTrustFast}</span>
                 </div>
+                <span className={styles.trustDividerDot} aria-hidden="true">•</span>
                 <div className={styles.trustItem}>
-                  <Check size={16} strokeWidth={2.5} className={styles.trustCheckIcon} />
-                  <span>{t.trustInstant}</span>
-                </div>
-                <div className={styles.trustItem}>
-                  <Check size={16} strokeWidth={2.5} className={styles.trustCheckIcon} />
-                  <span>{t.trustNoLimits}</span>
+                  <ShieldCheck size={15} strokeWidth={2.2} className={styles.trustIcon} />
+                  <span>{t.heroTrustFree}</span>
                 </div>
               </div>
             </div>
 
-            {/* Right Column: Visual Showcase Card */}
+            {/* Right Column: Adobe Acrobat Studio Showcase Canvas */}
             <div className={styles.heroShowcaseWrapper}>
-            <div className={styles.showcaseCard}>
-              <div className={styles.showcaseHeader}>
-                <div className={styles.showcaseDots}>
-                  <span className={styles.dotRed} />
-                  <span className={styles.dotYellow} />
-                  <span className={styles.dotGreen} />
-                </div>
-                <div className={styles.showcaseTitleBar}>
-                  <Lock size={12} />
-                  <span>PDF Tools Local Sandbox • High Speed Engine</span>
-                </div>
-                <div className={styles.showcaseBadgePulse}>
-                  <span className={styles.pulseDot} />
-                  <span>Ready</span>
-                </div>
-              </div>
-
-              {/* Showcase Tab Selector */}
-              <div className={styles.showcaseTabs}>
-                <button
-                  type="button"
-                  onClick={() => setShowcaseTab('merge')}
-                  className={`${styles.showcaseTabBtn} ${
-                    showcaseTab === 'merge' ? styles.showcaseTabBtnActive : ''
-                  }`}
-                >
-                  <Layers size={14} />
-                  <span>{t.showcaseTabMerge}</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setShowcaseTab('compress')}
-                  className={`${styles.showcaseTabBtn} ${
-                    showcaseTab === 'compress' ? styles.showcaseTabBtnActive : ''
-                  }`}
-                >
-                  <Zap size={14} />
-                  <span>{t.showcaseTabCompress}</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setShowcaseTab('image')}
-                  className={`${styles.showcaseTabBtn} ${
-                    showcaseTab === 'image' ? styles.showcaseTabBtnActive : ''
-                  }`}
-                >
-                  <FileImage size={14} />
-                  <span>{t.showcaseTabImage}</span>
-                </button>
-              </div>
-
-              {/* Dynamic Showcase Body depending on active tab */}
-              {showcaseTab === 'merge' && (
-                <div className={styles.showcaseBody}>
-                  {/* Left: Input File Stack */}
-                  <div className={styles.inputStack}>
-                    <div className={`${styles.docCard} ${styles.docCard1}`}>
-                      <div className={styles.docIconBox}>
-                        <FileText size={18} />
-                      </div>
-                      <div className={styles.docInfo}>
-                        <span className={styles.docName}>{t.heroMockupDoc1}</span>
-                        <span className={styles.docMeta}>4 Halaman • 850 KB</span>
-                      </div>
-                      <span className={styles.docOrderTag}>#1</span>
+              <div className={styles.studioWindow}>
+                {/* Minimalist Studio Application Bar */}
+                <div className={styles.studioAppBar}>
+                  <div className={styles.studioDocMeta}>
+                    <div className={styles.adobeDocIcon}>
+                      <FileText size={15} />
                     </div>
-
-                    <div className={`${styles.docCard} ${styles.docCard2}`}>
-                      <div className={styles.docIconBox}>
-                        <FileText size={18} />
-                      </div>
-                      <div className={styles.docInfo}>
-                        <span className={styles.docName}>{t.heroMockupDoc2}</span>
-                        <span className={styles.docMeta}>7 Halaman • 1.2 MB</span>
-                      </div>
-                      <span className={styles.docOrderTag}>#2</span>
-                    </div>
-
-                    <div className={`${styles.docCard} ${styles.docCard3}`}>
-                      <div className={styles.docIconBox}>
-                        <FileText size={18} />
-                      </div>
-                      <div className={styles.docInfo}>
-                        <span className={styles.docName}>{t.heroMockupDoc3}</span>
-                        <span className={styles.docMeta}>7 Halaman • 420 KB</span>
-                      </div>
-                      <span className={styles.docOrderTag}>#3</span>
-                    </div>
+                    <span className={styles.studioFileName}>{t.studioDocName}</span>
                   </div>
 
-                  {/* Center: Connector */}
-                  <div className={styles.fusionConnector}>
-                    <div className={styles.connectorLine} />
-                    <div className={styles.fusionNode}>
-                      <Layers size={22} className={styles.fusionNodeIcon} />
-                    </div>
-                    <div className={styles.connectorLine} />
-                  </div>
+                  {/* Segmented Mode Selector Tabs */}
+                  <div className={styles.studioModeSwitcher} role="tablist">
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={showcaseTab === 'merge'}
+                      onClick={() => setShowcaseTab('merge')}
+                      className={`${styles.studioModeTab} ${
+                        showcaseTab === 'merge' ? styles.studioModeTabActive : ''
+                      }`}
+                    >
+                      <Layers size={13} />
+                      <span>{t.showcaseTabMerge}</span>
+                    </button>
 
-                  {/* Right: Merged Output Document */}
-                  <div className={styles.outputStack}>
-                    <div className={styles.outputDocCard}>
-                      <div className={styles.outputGlow} />
-                      <div className={styles.outputTop}>
-                        <div className={styles.outputBadge}>
-                          <CheckCircle2 size={15} />
-                          <span>{t.heroMockupBadge}</span>
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={showcaseTab === 'compress'}
+                      onClick={() => setShowcaseTab('compress')}
+                      className={`${styles.studioModeTab} ${
+                        showcaseTab === 'compress' ? styles.studioModeTabActive : ''
+                      }`}
+                    >
+                      <Zap size={13} />
+                      <span>{t.showcaseTabCompress}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={showcaseTab === 'image'}
+                      onClick={() => setShowcaseTab('image')}
+                      className={`${styles.studioModeTab} ${
+                        showcaseTab === 'image' ? styles.studioModeTabActive : ''
+                      }`}
+                    >
+                      <FileImage size={13} />
+                      <span>{t.showcaseTabImage}</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Acrobat Document Stage */}
+                <div className={styles.studioCanvas}>
+                  {/* TAB 1: MERGE & ORGANIZE */}
+                  {showcaseTab === 'merge' && (
+                    <div className={styles.canvasMergeView}>
+                      <div className={styles.canvasPageGrid}>
+                        {/* Page 1 Miniature */}
+                        <div className={styles.sheetThumbnail}>
+                          <div className={styles.sheetHeader}>
+                            <span className={styles.sheetDocTag}>Proposal</span>
+                            <span className={styles.sheetPageNum}>1–4</span>
+                          </div>
+                          <div className={styles.sheetPaper}>
+                            <div className={styles.mockTitleBar} />
+                            <div className={styles.mockTextLineLong} />
+                            <div className={styles.mockTextLineMed} />
+                            <div className={styles.mockTextLineShort} />
+                          </div>
+                          <span className={styles.sheetFileName}>Proposal_Proyek.pdf</span>
+                        </div>
+
+                        {/* Page 2 Miniature */}
+                        <div className={styles.sheetThumbnail}>
+                          <div className={styles.sheetHeader}>
+                            <span className={styles.sheetDocTag}>Keuangan</span>
+                            <span className={styles.sheetPageNum}>5–8</span>
+                          </div>
+                          <div className={styles.sheetPaper}>
+                            <div className={styles.mockTitleBar} />
+                            <div className={styles.mockTextLineLong} />
+                            <div className={styles.mockTextLineMed} />
+                            <div className={styles.mockTextLineShort} />
+                          </div>
+                          <span className={styles.sheetFileName}>Analisis_Keuangan.pdf</span>
+                        </div>
+
+                        {/* Page 3 Miniature */}
+                        <div className={styles.sheetThumbnail}>
+                          <div className={styles.sheetHeader}>
+                            <span className={styles.sheetDocTag}>Lampiran</span>
+                            <span className={styles.sheetPageNum}>9–12</span>
+                          </div>
+                          <div className={styles.sheetPaper}>
+                            <div className={styles.mockTitleBar} />
+                            <div className={styles.mockTextLineLong} />
+                            <div className={styles.mockTextLineMed} />
+                            <div className={styles.mockTextLineShort} />
+                          </div>
+                          <span className={styles.sheetFileName}>Lampiran_Legalitas.pdf</span>
+                        </div>
+
+                        {/* Add Document Slot */}
+                        <Link href="/merge" className={styles.sheetAddSlot}>
+                          <span className={styles.sheetAddPlus}>+</span>
+                          <span className={styles.sheetAddLabel}>{t.studioAddDoc}</span>
+                        </Link>
+                      </div>
+
+                      {/* Stage Action Bar */}
+                      <div className={styles.stageActionBar}>
+                        <div className={styles.stageSummary}>
+                          <CheckCircle2 size={15} className={styles.stageCheckIcon} />
+                          <span>{t.studioMergeSummary}</span>
+                        </div>
+                        <Link href="/merge" className={`btn btn-primary btn-sm ${styles.stagePrimaryBtn}`}>
+                          <span>{t.studioMergeBtn}</span>
+                          <ArrowRight size={14} />
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* TAB 2: SMART COMPRESS */}
+                  {showcaseTab === 'compress' && (
+                    <div className={styles.canvasCompressView}>
+                      <div className={styles.compressCardsRow}>
+                        {/* Original File */}
+                        <div className={styles.compressFileCard}>
+                          <span className={styles.compressDocBadge}>{t.studioOriginalBadge}</span>
+                          <div className={styles.compressDocIcon}>
+                            <FileText size={24} />
+                          </div>
+                          <div className={styles.compressDocTitle}>Portofolio_HD.pdf</div>
+                          <div className={styles.compressDocSize}>24.8 MB</div>
+                        </div>
+
+                        {/* Minimalist Compression Indicator */}
+                        <div className={styles.compressMidSection}>
+                          <span className={styles.presetBadge}>{t.studioCompressSavings}</span>
+                          <div className={styles.compressArrowIndicator}>
+                            <ArrowRight size={18} />
+                          </div>
+                          <span className={styles.compressPreservedText}>{t.studioCompressPreset}</span>
+                        </div>
+
+                        {/* Output Compressed */}
+                        <div className={`${styles.compressFileCard} ${styles.compressResultCard}`}>
+                          <span className={styles.compressSuccessBadge}>{t.studioOptimalBadge}</span>
+                          <div className={styles.compressSuccessIcon}>
+                            <FileCheck size={24} />
+                          </div>
+                          <div className={styles.compressDocTitle}>Portofolio_compressed.pdf</div>
+                          <div className={styles.compressNewSize}>4.2 MB</div>
                         </div>
                       </div>
-                      <div className={styles.outputIconWrapper}>
-                        <FileCheck size={36} />
-                      </div>
-                      <h4 className={styles.outputTitle}>{t.heroMockupMerged}</h4>
-                      <p className={styles.outputSubtitle}>
-                        {t.heroMockupPages} • 2.47 MB • Quality 100%
-                      </p>
-                      <Link
-                        href="/merge"
-                        className={`btn btn-primary btn-sm ${styles.outputActionBtn}`}
-                      >
-                        <span>{t.toolCardMergeCta}</span>
-                        <ArrowRight size={14} />
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              )}
 
-              {showcaseTab === 'compress' && (
-                <div className={styles.showcaseBody}>
-                  {/* Left: Uncompressed file */}
-                  <div className={styles.outputDocCard} style={{ maxWidth: '280px', width: '100%' }}>
-                    <div className={styles.outputTop}>
-                      <span className={styles.docOrderTag}>Sebelum</span>
-                    </div>
-                    <div className={styles.docIconBox} style={{ width: '48px', height: '48px', margin: '0.5rem auto' }}>
-                      <FileText size={26} />
-                    </div>
-                    <h4 className={styles.outputTitle}>Laporan_Keuangan_Tahunan.pdf</h4>
-                    <p className={styles.outputSubtitle} style={{ color: 'var(--text-muted)' }}>
-                      {t.showcaseCompressBefore}
-                    </p>
-                  </div>
-
-                  {/* Center: Compressor engine */}
-                  <div className={styles.fusionConnector}>
-                    <div className={styles.connectorLine} />
-                    <div className={styles.fusionNode} style={{ background: 'rgba(220, 38, 38, 0.15)', color: 'var(--primary)' }}>
-                      <Zap size={22} />
-                    </div>
-                    <div className={styles.connectorLine} />
-                  </div>
-
-                  {/* Right: Compressed Result */}
-                  <div className={styles.outputDocCard} style={{ maxWidth: '300px', width: '100%' }}>
-                    <div className={styles.outputGlow} />
-                    <div className={styles.outputTop}>
-                      <div className={styles.outputBadge}>
-                        <Sparkles size={14} />
-                        <span>Lossless -66%</span>
+                      {/* Compress Stage Action Bar */}
+                      <div className={styles.stageActionBar}>
+                        <div className={styles.stageSummary}>
+                          <Sparkles size={15} className={styles.stageSparkleIcon} />
+                          <span>{t.studioCompressSummary}</span>
+                        </div>
+                        <Link href="/compress" className={`btn btn-primary btn-sm ${styles.stagePrimaryBtn}`}>
+                          <span>{t.studioCompressBtn}</span>
+                          <ArrowRight size={14} />
+                        </Link>
                       </div>
                     </div>
-                    <div className={styles.outputIconWrapper}>
-                      <FileCheck size={36} />
-                    </div>
-                    <h4 className={styles.outputTitle}>Laporan_Keuangan_compressed.pdf</h4>
-                    <p className={styles.outputSubtitle} style={{ color: '#10b981', fontWeight: 700 }}>
-                      {t.showcaseCompressAfter}
-                    </p>
-                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-                      {t.showcaseCompressQuality}
-                    </p>
-                    <Link
-                      href="/compress"
-                      className={`btn btn-primary btn-sm ${styles.outputActionBtn}`}
-                    >
-                      <span>{t.toolCardCompressCta}</span>
-                      <ArrowRight size={14} />
-                    </Link>
-                  </div>
-                </div>
-              )}
+                  )}
 
-              {showcaseTab === 'image' && (
-                <div className={styles.showcaseBody}>
-                  {/* Left: Input PDF */}
-                  <div className={styles.outputDocCard} style={{ maxWidth: '280px', width: '100%' }}>
-                    <div className={styles.outputTop}>
-                      <span className={styles.docOrderTag}>Input PDF</span>
-                    </div>
-                    <div className={styles.docIconBox} style={{ width: '48px', height: '48px', margin: '0.5rem auto' }}>
-                      <FileText size={26} />
-                    </div>
-                    <h4 className={styles.outputTitle}>Proposal_Desain_Arsitektur.pdf</h4>
-                    <p className={styles.outputSubtitle}>12 Halaman Vektor</p>
-                  </div>
+                  {/* TAB 3: PDF TO IMAGE */}
+                  {showcaseTab === 'image' && (
+                    <div className={styles.canvasExportView}>
+                      <div className={styles.exportShowcaseRow}>
+                        {/* High-res Document Page Preview */}
+                        <div className={styles.exportPreviewCard}>
+                          <div className={styles.exportSheetPreview}>
+                            <div className={styles.exportSheetCover}>
+                              <div className={styles.exportCoverBadge}>300 DPI</div>
+                              <div className={styles.exportCoverTitle}>{t.studioCoverTitle}</div>
+                              <div className={styles.exportCoverSubtitle}>{t.studioCoverSub}</div>
+                            </div>
+                          </div>
+                          <span className={styles.exportPreviewLabel}>{t.studioExportPreviewLabel}</span>
+                        </div>
 
-                  {/* Center: Image Converter Engine */}
-                  <div className={styles.fusionConnector}>
-                    <div className={styles.connectorLine} />
-                    <div className={styles.fusionNode} style={{ background: 'rgba(59, 130, 246, 0.15)', color: '#3b82f6' }}>
-                      <FileImage size={22} />
-                    </div>
-                    <div className={styles.connectorLine} />
-                  </div>
+                        {/* Export Settings Panel */}
+                        <div className={styles.exportSettingsCol}>
+                          <div className={styles.exportFormatSelector}>
+                            <span className={styles.exportFormatLabel}>{t.studioExportFormatLabel}</span>
+                            <div className={styles.exportPills}>
+                              <span className={`${styles.formatPill} ${styles.formatPillActive}`}>PNG HD</span>
+                              <span className={styles.formatPill}>JPG</span>
+                              <span className={styles.formatPill}>WebP</span>
+                            </div>
+                          </div>
 
-                  {/* Right: Converted Images */}
-                  <div className={styles.outputDocCard} style={{ maxWidth: '300px', width: '100%' }}>
-                    <div className={styles.outputGlow} />
-                    <div className={styles.outputTop}>
-                      <div className={styles.outputBadge}>
-                        <CheckCircle2 size={14} />
-                        <span>300 DPI HD</span>
+                          <div className={styles.exportDetailCard}>
+                            <div className={styles.exportDetailRow}>
+                              <span>{t.studioExportResLabel}</span>
+                              <strong>300 DPI Ultra Sharp</strong>
+                            </div>
+                            <div className={styles.exportDetailRow}>
+                              <span>{t.studioExportPagesLabel}</span>
+                              <strong>{t.studioExportPagesVal}</strong>
+                            </div>
+                            <div className={styles.exportDetailRow}>
+                              <span>{t.studioExportZipLabel}</span>
+                              <strong>{t.studioExportZipVal}</strong>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Export Stage Action Bar */}
+                      <div className={styles.stageActionBar}>
+                        <div className={styles.stageSummary}>
+                          <Archive size={15} className={styles.stageArchiveIcon} />
+                          <span>{t.studioExportSummary}</span>
+                        </div>
+                        <Link href="/pdf-to-image" className={`btn btn-primary btn-sm ${styles.stagePrimaryBtn}`}>
+                          <span>{t.studioExportBtn}</span>
+                          <ArrowRight size={14} />
+                        </Link>
                       </div>
                     </div>
-                    <div className={styles.outputIconWrapper}>
-                      <Archive size={36} />
-                    </div>
-                    <h4 className={styles.outputTitle}>Proposal_images_png.zip</h4>
-                    <p className={styles.outputSubtitle} style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
-                      12 Gambar HD Siap Unduh
-                    </p>
-                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-                      {t.showcaseImageZip}
-                    </p>
-                    <Link
-                      href="/pdf-to-image"
-                      className={`btn btn-primary btn-sm ${styles.outputActionBtn}`}
-                    >
-                      <span>{t.toolCardPdfToImageCta}</span>
-                      <ArrowRight size={14} />
-                    </Link>
-                  </div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
       </section>
 
       {/* Featured Tools Grid Section */}

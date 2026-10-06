@@ -61,7 +61,7 @@ export const metadata: Metadata = {
   authors: [{ name: 'Primadev Digital Technology', url: 'https://pdftools.primadev.id' }],
   creator: 'Primadev Digital Technology',
   publisher: 'Primadev Digital Technology',
-  applicationName: 'PDF Tools by Primadev',
+  applicationName: 'PDF Tools',
   category: 'productivity',
   alternates: {
     canonical: '/',
@@ -93,7 +93,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     url: '/',
-    siteName: 'PDF Tools by Primadev',
+    siteName: 'PDF Tools',
     title: 'PDF Tools | Solusi Dokumen PDF Lengkap, Cepat & Aman',
     description:
       'Gabung, kompres, dan ubah dokumen PDF Anda dengan mudah, cepat, dan presisi langsung di peramban tanpa batasan. 100% Client-Side dan Privasi Terjamin.',
@@ -137,9 +137,8 @@ const jsonLdData = {
       url: 'https://pdftools.primadev.id/',
       name: 'PDF Tools',
       alternateName: [
-        'PDF Tools by Primadev',
-        'PDF Tools Primadev',
-        'PDFTools'
+        'PDFTools',
+        'PDF Tools Online'
       ],
       publisher: {
         '@type': 'Organization',
@@ -160,7 +159,7 @@ const jsonLdData = {
       '@type': 'WebApplication',
       '@id': 'https://pdftools.primadev.id/#webapp',
       name: 'PDF Tools',
-      alternateName: ['Peralatan PDF Online', 'PDF Tools by Primadev', 'PDF Merger, Compressor & Converter'],
+      alternateName: ['PDFTools', 'Peralatan PDF Online', 'PDF Merger, Compressor & Converter'],
       url: 'https://pdftools.primadev.id',
       applicationCategory: 'UtilitiesApplication',
       operatingSystem: 'All',

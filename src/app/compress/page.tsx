@@ -1,9 +1,14 @@
-'use client';
-
+import type { Metadata } from 'next';
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import CompressWorkspace from '@/components/tools/compress/CompressWorkspace';
 import Footer from '@/components/Footer';
+
+export const metadata: Metadata = {
+  title: 'Kompres PDF Online',
+  description:
+    'Perkecil ukuran berkas dokumen PDF secara signifikan tanpa merusak ketajaman teks atau kualitas visual gambar langsung di browser.',
+};
 
 export default function CompressPage() {
   return (
