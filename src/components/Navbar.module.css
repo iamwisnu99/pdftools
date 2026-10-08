@@ -341,8 +341,8 @@
 @media (max-width: 640px) {
   .navbarInner {
     height: 3.75rem;
-    padding-left: 0.875rem !important;
-    padding-right: 0.875rem !important;
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
     gap: 0.5rem;
   }
 
@@ -416,5 +416,13 @@
     height: 2.125rem;
     padding: 0;
     border-radius: var(--radius-md);
+  }
+}
+
+@media (max-width: 380px) {
+  .navbarInner {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    gap: 0.35rem;
   }
 }

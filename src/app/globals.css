@@ -122,6 +122,8 @@ html {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 body {
@@ -130,6 +132,7 @@ body {
   flex-direction: column;
   background-color: var(--bg-primary);
   overflow-x: hidden;
+  max-width: 100%;
 }
 
 code,
@@ -158,15 +161,24 @@ pre {
 
 /* Layout Utilities */
 .container {
+  width: 100%;
   max-width: 1320px;
   margin: 0 auto;
   padding: 0 1.5rem;
+  box-sizing: border-box;
 }
 
 @media (min-width: 1440px) {
   .container {
     max-width: 1380px;
     padding: 0 2rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 0 1rem;
+    max-width: 100%;
   }
 }
 

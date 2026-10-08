@@ -1,6 +1,9 @@
 .landingContainer {
   position: relative;
-  overflow: hidden;
+  overflow-x: clip;
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
   padding-bottom: 5rem;
 }
 
@@ -16,6 +19,7 @@
   overflow: hidden;
   pointer-events: none;
   z-index: 0;
+  max-width: 100%;
 }
 
 .heroSubtleGlow {
@@ -57,6 +61,9 @@
   position: relative;
   z-index: 1;
   padding: 4.5rem 0 3.5rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .heroGrid {
@@ -64,6 +71,10 @@
   grid-template-columns: 1.05fr 1.12fr;
   align-items: center;
   gap: 3.5rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 @media (min-width: 1200px) {
@@ -77,6 +88,10 @@
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .heroTitle {
@@ -188,10 +203,16 @@
 .heroShowcaseWrapper {
   width: 100%;
   max-width: 660px;
+  min-width: 0;
+  box-sizing: border-box;
   margin: 0 auto;
 }
 
 .studioWindow {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   background: var(--bg-surface);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-xl);
@@ -323,6 +344,11 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 [data-theme='dark'] .studioCanvas {
@@ -336,12 +362,20 @@
   gap: 1.15rem;
   height: 100%;
   justify-content: space-between;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .canvasPageGrid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.75rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .sheetThumbnail {
@@ -352,6 +386,11 @@
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
   box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
@@ -450,6 +489,11 @@
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: left;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .sheetAddSlot {
@@ -1533,43 +1577,423 @@
 
 @media (max-width: 768px) {
   .heroSection {
-    padding: 3.5rem 0 2.5rem;
+    padding: 3rem 0 2rem;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  .heroGrid {
+    grid-template-columns: 1fr;
+    gap: 2.25rem;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .heroLeft {
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    margin: 0 auto;
+  }
+
+  .heroTitle {
+    font-size: clamp(2rem, 5.5vw, 2.75rem);
+    max-width: 100%;
+    margin: 0 auto 1.15rem;
+    text-wrap: balance;
+  }
+
+  .heroSubtitle {
+    font-size: 1rem;
+    max-width: 540px;
+    margin: 0 auto 1.75rem;
+    text-wrap: pretty;
+  }
+
+  .heroCtaGroup {
+    justify-content: center;
+    width: 100%;
+    max-width: 100%;
+    gap: 0.85rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .trustRow {
+    justify-content: center;
+    margin: 0 auto;
+    gap: 0.5rem 0.75rem;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .heroShowcaseWrapper {
+    width: 100%;
+    max-width: 620px;
+    min-width: 0;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+
+  .studioWindow {
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow: hidden;
   }
 
   .studioAppBar {
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: stretch;
     padding: 0.65rem 0.85rem;
+    gap: 0.5rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .studioDocMeta {
+    width: 100%;
+    justify-content: flex-start;
     gap: 0.5rem;
   }
 
+  .adobeDocIcon {
+    width: 24px;
+    height: 24px;
+    border-radius: 5px;
+  }
+
+  .adobeDocIcon svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .studioFileName {
+    font-size: 0.775rem;
+    max-width: calc(100% - 34px);
+  }
+
   .studioModeSwitcher {
-    order: 3;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     width: 100%;
+    box-sizing: border-box;
+    gap: 0.25rem;
+    padding: 0.25rem;
+  }
+
+  .studioModeTab {
+    width: 100%;
+    min-width: 0;
     justify-content: center;
+    padding: 0.4rem 0.35rem;
+    font-size: 0.75rem;
+    gap: 0.3rem;
+    border-radius: var(--radius-full);
+    box-sizing: border-box;
+  }
+
+  .studioModeTab svg {
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+  }
+
+  .studioModeTab span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .studioCanvas {
+    padding: 1rem 0.85rem;
+    min-height: auto;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  /* --- TAB 1 (Merge) --- */
+  .canvasMergeView {
+    gap: 0.85rem;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
   }
 
   .canvasPageGrid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .sheetAddSlot {
+    display: none !important;
+  }
+
+  .sheetThumbnail {
+    padding: 0.5rem 0.4rem;
+    gap: 0.35rem;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+  }
+
+  .sheetHeader {
+    font-size: 0.6rem;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .sheetDocTag {
+    font-size: 0.58rem;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .sheetPageNum {
+    font-size: 0.58rem;
+    flex-shrink: 0;
+  }
+
+  .sheetPaper {
+    padding: 0.4rem 0.35rem;
+    aspect-ratio: 1 / 1.25;
+    gap: 0.25rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .mockTitleBar {
+    height: 3px;
+    margin-bottom: 1px;
+  }
+
+  .mockTextLineLong,
+  .mockTextLineMed,
+  .mockTextLineShort {
+    height: 2px;
+  }
+
+  .sheetFileName {
+    font-size: 0.62rem;
+    text-align: center;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    box-sizing: border-box;
+  }
+
+  /* --- TAB 2 (Compress) --- */
+  .canvasCompressView {
+    gap: 0.85rem;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
   }
 
   .compressCardsRow {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 0.5rem;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .compressFileCard {
+    padding: 0.85rem 0.5rem;
+    gap: 0.35rem;
+    border-radius: var(--radius-md);
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .compressDocBadge,
+  .compressSuccessBadge {
+    font-size: 0.58rem;
+    padding: 0.12rem 0.4rem;
+  }
+
+  .compressDocIcon svg,
+  .compressSuccessIcon svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .compressDocTitle {
+    font-size: 0.68rem;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    box-sizing: border-box;
+  }
+
+  .compressDocSize,
+  .compressNewSize {
+    font-size: 1rem;
+  }
+
+  .compressMidSection {
+    padding: 0.5rem 0.35rem;
+    gap: 0.35rem;
+    border-radius: var(--radius-md);
+    min-width: 0;
+    flex-shrink: 0;
+    box-sizing: border-box;
+  }
+
+  .presetBadge {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.4rem;
+    white-space: nowrap;
+  }
+
+  .compressArrowIndicator svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .compressPreservedText {
+    font-size: 0.52rem;
+    max-width: 72px;
+    line-height: 1.15;
+    text-align: center;
+    white-space: normal;
+  }
+
+  /* --- TAB 3 (Export) --- */
+  .canvasExportView {
+    gap: 0.85rem;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
   }
 
   .exportShowcaseRow {
-    grid-template-columns: 1fr;
-    gap: 0.85rem;
+    grid-template-columns: 85px minmax(0, 1fr);
+    gap: 0.65rem;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
   }
 
+  .exportPreviewCard {
+    padding: 0.6rem 0.45rem;
+    gap: 0.35rem;
+    border-radius: var(--radius-md);
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .exportSheetPreview {
+    width: 65px;
+    margin: 0 auto;
+  }
+
+  .exportSheetCover {
+    padding: 0.45rem 0.3rem;
+    gap: 0.25rem;
+  }
+
+  .exportCoverBadge {
+    font-size: 0.52rem;
+    padding: 0.12rem 0.3rem;
+  }
+
+  .exportCoverTitle {
+    font-size: 0.5rem;
+  }
+
+  .exportCoverSubtitle {
+    font-size: 0.45rem;
+  }
+
+  .exportPreviewLabel {
+    font-size: 0.6rem;
+    text-align: center;
+  }
+
+  .exportSettingsCol {
+    gap: 0.5rem;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .exportFormatSelector {
+    gap: 0.35rem;
+    width: 100%;
+  }
+
+  .exportFormatLabel {
+    font-size: 0.68rem;
+  }
+
+  .exportPills {
+    gap: 0.25rem;
+    flex-wrap: wrap;
+  }
+
+  .formatPill {
+    padding: 0.22rem 0.55rem;
+    font-size: 0.68rem;
+  }
+
+  .exportDetailCard {
+    padding: 0.55rem 0.65rem;
+    gap: 0.25rem;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .exportDetailRow {
+    font-size: 0.68rem;
+    width: 100%;
+  }
+
+  /* Action Bar */
   .stageActionBar {
     flex-direction: column;
     align-items: stretch;
-    gap: 0.65rem;
+    gap: 0.5rem;
+    padding: 0.55rem 0.75rem;
+    width: 100%;
+    box-sizing: border-box;
     text-align: center;
   }
 
   .stageSummary {
+    font-size: 0.75rem;
     justify-content: center;
     white-space: normal;
   }
@@ -1577,6 +2001,8 @@
   .stagePrimaryBtn {
     width: 100%;
     justify-content: center;
+    font-size: 0.8125rem;
+    padding: 0.55rem 0.85rem;
   }
 
   .featuresGrid {
@@ -1610,28 +2036,196 @@
     font-size: 0.825rem;
   }
 
-  .trustRow {
-    gap: 0.5rem 0.75rem;
-  }
-
   .bottomCtaCard {
     padding: 3.5rem 1.5rem;
   }
 }
 
+/* =========================================================================
+   Mobile Viewport Adjustments (<= 540px)
+   ========================================================================= */
 @media (max-width: 540px) {
+  .heroSection {
+    padding: 2.25rem 0 1.75rem;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .heroGrid {
+    gap: 1.75rem;
+  }
+
+  .heroTitle {
+    font-size: clamp(1.7rem, 6.5vw, 2.25rem);
+    line-height: 1.2;
+    text-wrap: balance;
+    margin: 0 auto 0.85rem;
+  }
+
+  .heroSubtitle {
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    margin: 0 auto 1.35rem;
+  }
+
+  .heroCtaGroup {
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 360px !important;
+    margin: 0 auto 1.35rem !important;
+    gap: 0.65rem !important;
+  }
+
+  .mainCtaBtn,
+  .secondaryCtaBtn {
+    width: 100% !important;
+    justify-content: center !important;
+    font-size: 0.95rem !important;
+    padding: 0.75rem 1.25rem !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Minimalist Pills for Trust Indicators on Mobile */
   .trustRow {
-    flex-direction: column;
-    gap: 0.45rem;
-    align-items: center;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 0.45rem 0.6rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding-top: 0.25rem !important;
   }
 
   .trustDividerDot {
-    display: none;
+    display: none !important;
   }
-}
 
-@media (max-width: 480px) {
+  .trustItem {
+    background: var(--bg-surface) !important;
+    border: 1px solid var(--border-light) !important;
+    border-radius: var(--radius-full) !important;
+    padding: 0.28rem 0.65rem !important;
+    font-size: 0.72rem !important;
+    font-weight: 600 !important;
+    gap: 0.35rem !important;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+    white-space: nowrap !important;
+  }
+
+  .studioAppBar {
+    padding: 0.6rem 0.65rem;
+    gap: 0.5rem;
+  }
+
+  .studioModeTab {
+    font-size: 0.7rem !important;
+    padding: 0.35rem 0.2rem !important;
+    gap: 0.2rem !important;
+  }
+
+  .studioModeTab svg {
+    width: 12px !important;
+    height: 12px !important;
+  }
+
+  .studioCanvas {
+    padding: 0.75rem 0.65rem !important;
+  }
+
+  /* --- TAB 1 (Merge) on Phones: 2 Spacious Cards in 1 Row (Zero Overflow) --- */
+  .canvasPageGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.55rem !important;
+    width: 100% !important;
+  }
+
+  /* Hide 3rd card on small phone screens so 2 cards have ample room and never cut off */
+  .canvasPageGrid > div:nth-child(3) {
+    display: none !important;
+  }
+
+  .sheetThumbnail {
+    padding: 0.45rem 0.35rem !important;
+    gap: 0.3rem !important;
+  }
+
+  .sheetPaper {
+    aspect-ratio: 1 / 1.2 !important;
+  }
+
+  /* --- TAB 2 (Compress) on Phones: Compact Side-by-Side --- */
+  .compressCardsRow {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important;
+    gap: 0.35rem !important;
+  }
+
+  .compressFileCard {
+    padding: 0.65rem 0.4rem !important;
+  }
+
+  .compressDocIcon svg,
+  .compressSuccessIcon svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .compressDocTitle {
+    font-size: 0.62rem !important;
+  }
+
+  .compressDocSize,
+  .compressNewSize {
+    font-size: 0.9rem !important;
+  }
+
+  .compressMidSection {
+    padding: 0.4rem 0.25rem !important;
+    min-width: 64px !important;
+  }
+
+  .presetBadge {
+    font-size: 0.6rem !important;
+    padding: 0.12rem 0.3rem !important;
+  }
+
+  .compressArrowIndicator svg {
+    width: 13px !important;
+    height: 13px !important;
+  }
+
+  .compressPreservedText {
+    font-size: 0.5rem !important;
+    max-width: 64px !important;
+  }
+
+  /* --- TAB 3 (Export) on Phones: Balanced Columns --- */
+  .exportShowcaseRow {
+    grid-template-columns: 75px minmax(0, 1fr) !important;
+    gap: 0.45rem !important;
+  }
+
+  .exportPreviewCard {
+    padding: 0.45rem 0.35rem !important;
+  }
+
+  .exportSheetPreview {
+    width: 58px !important;
+  }
+
+  .formatPill {
+    padding: 0.18rem 0.45rem !important;
+    font-size: 0.62rem !important;
+  }
+
+  .exportDetailCard {
+    padding: 0.45rem 0.5rem !important;
+  }
+
+  .exportDetailRow {
+    font-size: 0.62rem !important;
+  }
+
   .metricsGrid {
     grid-template-columns: 1fr;
   }
@@ -1642,6 +2236,31 @@
     white-space: nowrap;
   }
 }
+
+/* =========================================================================
+   Ultra-Compact Viewports (<= 360px)
+   ========================================================================= */
+@media (max-width: 360px) {
+  .studioModeTab {
+    font-size: 0.64rem !important;
+    padding: 0.3rem 0.1rem !important;
+    gap: 0.1rem !important;
+  }
+
+  .studioModeTab svg {
+    display: none !important;
+  }
+
+  .trustRow {
+    gap: 0.35rem 0.45rem !important;
+  }
+
+  .trustItem {
+    font-size: 0.68rem !important;
+    padding: 0.22rem 0.45rem !important;
+  }
+}
+
 
 /* =========================================================================
    Featured Tools Section
