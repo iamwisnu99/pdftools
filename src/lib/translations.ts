@@ -78,7 +78,9 @@ export const translations = {
 
     // Featured Tools Grid on Landing
     toolsSectionTitle: 'Peralatan Unggulan untuk Dokumen Anda',
-    toolsSectionSubtitle: 'Pilih alat yang Anda perlukan. Semua berjalan instan di komputer atau ponsel Anda tanpa perantara server.',
+    toolsSectionSubtitle: '3 alat yang paling sering digunakan untuk kebutuhan dokumen sehari-hari. Pemrosesan instan dan aman langsung di perangkat Anda.',
+    toolsViewAllBtn: 'Lihat Semua Peralatan',
+    toolsViewAllDesc: 'Mencari alat lain? Jelajahi konversi Office (Excel, Word, PowerPoint), Pisahkan PDF, dan Proteksi di direktori lengkap.',
     toolCardMergeBadge: 'Paling Populer',
     toolCardMergeTitle: 'Gabung Dokumen PDF',
     toolCardMergeDesc: 'Kombinasikan beberapa berkas PDF sekaligus. Geser kartu untuk atur urutan, putar halaman miring, dan tentukan halaman yang ingin disimpan.',
@@ -108,6 +110,21 @@ export const translations = {
     toolCardProtectTitle: 'Kunci & Buka Sandi PDF',
     toolCardProtectDesc: 'Amankan dokumen PDF Anda dengan enkripsi kata sandi kuat atau hilangkan proteksi sandi dokumen milik Anda secara instan.',
     toolCardProtectCta: 'Buka Kunci & Sandi PDF',
+
+    toolCardExcelToPdfBadge: 'Deteksi Multi-Tabel',
+    toolCardExcelToPdfTitle: 'Ubah Excel ke PDF',
+    toolCardExcelToPdfDesc: 'Konversi spreadsheet Excel (.xlsx/.xls) ke PDF. Dilengkapi deteksi otomatis multi-tabel dalam 1 sheet, atur 1 per halaman atau muatkan 2 konten.',
+    toolCardExcelToPdfCta: 'Buka Excel ke PDF',
+
+    toolCardWordToPdfBadge: 'Presisi Layout',
+    toolCardWordToPdfTitle: 'Ubah Word ke PDF',
+    toolCardWordToPdfDesc: 'Konversi dokumen Word (.docx) ke PDF dengan layout, font, heading, dan tabel terjaga sempurna. 100% diproses langsung di browser.',
+    toolCardWordToPdfCta: 'Buka Word ke PDF',
+
+    toolCardPowerPointToPdfBadge: 'Deck & Handout',
+    toolCardPowerPointToPdfTitle: 'Ubah PowerPoint ke PDF',
+    toolCardPowerPointToPdfDesc: 'Ubah presentasi PowerPoint (.pptx) menjadi PDF. Pilih slide, atur urutan, dan sesuaikan format slide penuh atau handout catatan rapat.',
+    toolCardPowerPointToPdfCta: 'Buka PowerPoint ke PDF',
 
     // Tools Catalog Page (/tools)
     toolsCatalogTitle: 'Katalog Peralatan PDF',
@@ -561,7 +578,9 @@ export const translations = {
 
     // Featured Tools Grid on Landing
     toolsSectionTitle: 'Essential Tools for Every PDF Task',
-    toolsSectionSubtitle: 'Choose the right tool for the job. Everything executes smoothly on your machine without third-party servers.',
+    toolsSectionSubtitle: 'The 3 most popular utilities for everyday document workflows. Instant and secure processing directly on your device.',
+    toolsViewAllBtn: 'View All Tools',
+    toolsViewAllDesc: 'Looking for more? Discover Office conversions (Excel, Word, PowerPoint), Split PDF, and Protection in the full directory.',
     toolCardMergeBadge: 'Most Popular',
     toolCardMergeTitle: 'Merge PDF Documents',
     toolCardMergeDesc: 'Combine multiple PDFs into one unified file. Drag to rearrange, rotate tilted pages, and pick specific pages to keep.',
@@ -591,6 +610,21 @@ export const translations = {
     toolCardProtectTitle: 'Protect & Unlock PDF',
     toolCardProtectDesc: 'Secure your PDF files with military-grade AES-256 password encryption or instantly unlock protected PDFs you own.',
     toolCardProtectCta: 'Open Protect & Unlock',
+
+    toolCardExcelToPdfBadge: 'Smart Table Split',
+    toolCardExcelToPdfTitle: 'Excel to PDF Converter',
+    toolCardExcelToPdfDesc: 'Convert Excel spreadsheets (.xlsx/.xls) to PDF. Features smart multi-table block detection per sheet, custom ordering, and 1 per page or fit 2 per page.',
+    toolCardExcelToPdfCta: 'Open Excel to PDF',
+
+    toolCardWordToPdfBadge: 'High-Precision Layout',
+    toolCardWordToPdfTitle: 'Word to PDF Converter',
+    toolCardWordToPdfDesc: 'Convert Word documents (.docx) to PDF with accurate fonts, headings, tables, and styling preserved. 100% processed in browser with zero server uploads.',
+    toolCardWordToPdfCta: 'Open Word to PDF',
+
+    toolCardPowerPointToPdfBadge: 'Deck & Handouts',
+    toolCardPowerPointToPdfTitle: 'PowerPoint to PDF',
+    toolCardPowerPointToPdfDesc: 'Transform PowerPoint presentations (.pptx) into crisp PDF. Select slides, customize sequence, and export as full slides or 2/4 handout notes per page.',
+    toolCardPowerPointToPdfCta: 'Open PowerPoint to PDF',
 
     // Tools Catalog Page (/tools)
     toolsCatalogTitle: 'PDF Tools Directory',

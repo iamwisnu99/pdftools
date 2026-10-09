@@ -14,13 +14,16 @@
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
     "canvas-confetti": "^1.9.4",
+    "docx-preview": "^0.4.1",
+    "html2canvas": "^1.4.1",
     "jszip": "^3.10.2",
     "lucide-react": "^1.47.0",
     "next": "16.3.6",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^6.3.289",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/canvas-confetti": "^1.9.0",

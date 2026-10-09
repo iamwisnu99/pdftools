@@ -12,6 +12,9 @@ import {
   Scissors,
   LockKeyhole,
   Images,
+  FileSpreadsheet,
+  FileText,
+  Presentation,
 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import styles from './ToolsCatalog.module.css';
@@ -21,6 +24,36 @@ export default function ToolsCatalog() {
   const [searchTerm, setSearchTerm] = useState('');
 
   const tools = [
+    {
+      id: 'excel-to-pdf',
+      title: t.toolCardExcelToPdfTitle,
+      desc: t.toolCardExcelToPdfDesc,
+      badge: t.toolCardExcelToPdfBadge,
+      cta: t.toolCardExcelToPdfCta,
+      href: '/excel-to-pdf',
+      icon: <FileSpreadsheet size={28} />,
+      pills: ['Deteksi Multi-Tabel', '1 / 2 Tabel per Halaman', 'Pilih Blok Data', 'A4 & Letter'],
+    },
+    {
+      id: 'word-to-pdf',
+      title: t.toolCardWordToPdfTitle,
+      desc: t.toolCardWordToPdfDesc,
+      badge: t.toolCardWordToPdfBadge,
+      cta: t.toolCardWordToPdfCta,
+      href: '/word-to-pdf',
+      icon: <FileText size={28} />,
+      pills: ['DOCX ke PDF', 'Font & Layout Presisi', '300 DPI HD', '100% Client-Side'],
+    },
+    {
+      id: 'powerpoint-to-pdf',
+      title: t.toolCardPowerPointToPdfTitle,
+      desc: t.toolCardPowerPointToPdfDesc,
+      badge: t.toolCardPowerPointToPdfBadge,
+      cta: t.toolCardPowerPointToPdfCta,
+      href: '/powerpoint-to-pdf',
+      icon: <Presentation size={28} />,
+      pills: ['Slide Deck Penuh', 'Handout 2 / 4 Slide', 'Pilih Urutan Slide', 'Area Catatan Rapat'],
+    },
     {
       id: 'merge',
       title: t.toolCardMergeTitle,

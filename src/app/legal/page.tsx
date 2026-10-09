@@ -56,6 +56,7 @@ function LegalDocumentationView() {
   // Language Dropdown
   const [isLangOpen, setIsLangOpen] = useState(false);
   const langDropdownRef = useRef<HTMLDivElement>(null);
+  const mainContentRef = useRef<HTMLElement>(null);
 
   // Sync with URL query parameter
   useEffect(() => {
@@ -98,6 +99,9 @@ function LegalDocumentationView() {
   const handleSelectDoc = (docId: LegalDocId) => {
     setActiveDoc(docId);
     router.push(`/legal?doc=${docId}`, { scroll: false });
+    if (mainContentRef.current) {
+      mainContentRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -110,6 +114,9 @@ function LegalDocumentationView() {
   };
 
   const scrollToTop = () => {
+    if (mainContentRef.current) {
+      mainContentRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -515,7 +522,7 @@ function LegalDocumentationView() {
   const nextDoc = currentIndex < docsList.length - 1 ? docsList[currentIndex + 1] : null;
 
   return (
-    <div className={styles.legalPageWrapper}>
+    <div className={styles.legalPageWrapper} suppressHydrationWarning>
       {/* Top Docs Header */}
       <header className={styles.docsHeader}>
         <div className={`container ${styles.docsHeaderInner}`}>
@@ -741,7 +748,7 @@ function LegalDocumentationView() {
         </aside>
 
         {/* Center Main Documentation Reader */}
-        <main className={styles.docsMainContent}>
+        <main ref={mainContentRef} className={styles.docsMainContent}>
           {/* Breadcrumbs */}
           <nav className={styles.breadcrumbs} aria-label="Breadcrumb">
             <Link href="/" className={styles.breadcrumbLink}>
