@@ -126,6 +126,11 @@ export const translations = {
     toolCardPowerPointToPdfDesc: 'Ubah presentasi PowerPoint (.pptx) menjadi PDF. Pilih slide, atur urutan, dan sesuaikan format slide penuh atau handout catatan rapat.',
     toolCardPowerPointToPdfCta: 'Buka PowerPoint ke PDF',
 
+    toolCardEditPdfBadge: 'Edit Teks Vektor',
+    toolCardEditPdfTitle: 'Edit Dokumen PDF',
+    toolCardEditPdfDesc: 'Ganti atau perbarui teks di dalam file PDF dengan presisi tinggi. Menjaga jenis font, ukuran pt, ketebalan, dan layout asli tetap 100% rapi.',
+    toolCardEditPdfCta: 'Buka Edit PDF',
+
     // Tools Catalog Page (/tools)
     toolsCatalogTitle: 'Katalog Peralatan PDF',
     toolsCatalogSubtitle: 'Kumpulan utilitas PDF lengkap untuk mempermudah pekerjaan dokumen Anda. Pilih alat yang Anda butuhkan—semuanya diproses secara lokal, cepat, dan aman.',
@@ -625,6 +630,11 @@ export const translations = {
     toolCardPowerPointToPdfTitle: 'PowerPoint to PDF',
     toolCardPowerPointToPdfDesc: 'Transform PowerPoint presentations (.pptx) into crisp PDF. Select slides, customize sequence, and export as full slides or 2/4 handout notes per page.',
     toolCardPowerPointToPdfCta: 'Open PowerPoint to PDF',
+
+    toolCardEditPdfBadge: 'Vector Text Edit',
+    toolCardEditPdfTitle: 'Edit PDF Document',
+    toolCardEditPdfDesc: 'Replace or update text inside your PDF with high precision. Preserves original font family, font size, weight, and layout without formatting loss.',
+    toolCardEditPdfCta: 'Open Edit PDF',
 
     // Tools Catalog Page (/tools)
     toolsCatalogTitle: 'PDF Tools Directory',

@@ -15,6 +15,7 @@ import {
   FileSpreadsheet,
   FileText,
   Presentation,
+  FileEdit,
 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import styles from './ToolsCatalog.module.css';
@@ -24,6 +25,16 @@ export default function ToolsCatalog() {
   const [searchTerm, setSearchTerm] = useState('');
 
   const tools = [
+    {
+      id: 'edit-pdf',
+      title: t.toolCardEditPdfTitle,
+      desc: t.toolCardEditPdfDesc,
+      badge: t.toolCardEditPdfBadge,
+      cta: t.toolCardEditPdfCta,
+      href: '/edit-pdf',
+      icon: <FileEdit size={28} />,
+      pills: ['Preservasi Font Asli', 'Tata Letak Vektor Utuh', 'Ganti Teks Apapun', 'Cari & Ganti Sekaligus'],
+    },
     {
       id: 'excel-to-pdf',
       title: t.toolCardExcelToPdfTitle,
