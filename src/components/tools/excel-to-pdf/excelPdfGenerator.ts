@@ -1,8 +1,9 @@
-import { PDFDocument } from '@cantoo/pdf-lib';
-import html2canvas from 'html2canvas';
-import { PageLayoutGroup, ContentBlock } from './excelBlockDetector';
+﻿import { jsPDF } from 'jspdf';
+import autoTable, { UserOptions } from 'jspdf-autotable';
+import JSZip from 'jszip';
+import { PageLayoutGroup, ContentBlock, RichCell } from './excelBlockDetector';
 
-export type TableTheme = 'modern' | 'corporate' | 'grid';
+export type TableTheme = 'dual_optimized' | 'excel_native' | 'monochrome' | 'modern';
 export type PageOrientation = 'auto' | 'portrait' | 'landscape';
 export type PageSize = 'A4' | 'Letter';
 
@@ -16,286 +17,338 @@ export interface GeneratePdfOptions {
   onProgress?: (percent: number, status: string) => void;
 }
 
-/**
- * Merender representasi visual HTML dari suatu PageLayoutGroup ke dalam DOM tersembunyi
- */
-function createPageDomElement(
-  page: PageLayoutGroup,
-  totalPages: number,
-  options: GeneratePdfOptions,
-  isLandscape: boolean
-): HTMLDivElement {
-  const container = document.createElement('div');
-  container.className = 'pdf-render-page';
-  
-  // Standard A4 dimensions in pixels at 96 DPI: Portrait 794x1123, Landscape 1123x794
-  const widthPx = isLandscape ? 1123 : 794;
-  const heightPx = isLandscape ? 794 : 1123;
+function hexToRgb(hex: string): [number, number, number] | null {
+  const clean = hex.replace('#', '');
+  if (clean.length !== 6) return null;
+  const r = parseInt(clean.substring(0, 2), 16);
+  const g = parseInt(clean.substring(2, 4), 16);
+  const b = parseInt(clean.substring(4, 6), 16);
+  if (isNaN(r) || isNaN(g) || isNaN(b)) return null;
+  return [r, g, b];
+}
 
-  container.style.width = `${widthPx}px`;
-  container.style.minHeight = `${heightPx}px`;
-  container.style.padding = '48px';
-  container.style.backgroundColor = '#ffffff';
-  container.style.color = '#0f172a';
-  container.style.fontFamily =
-    "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
-  container.style.boxSizing = 'border-box';
-  container.style.display = 'flex';
-  container.style.flexDirection = 'column';
-  container.style.justifyContent = 'space-between';
-  container.style.position = 'fixed';
-  container.style.left = '-9999px';
-  container.style.top = '0';
-  container.style.zIndex = '-1000';
-
-  // --- Header Halaman ---
-  const header = document.createElement('div');
-  header.style.display = 'flex';
-  header.style.justifyContent = 'space-between';
-  header.style.alignItems = 'center';
-  header.style.paddingBottom = '14px';
-  header.style.marginBottom = '20px';
-  header.style.borderBottom =
-    options.theme === 'corporate'
-      ? '2px solid #dc2626'
-      : '1px solid #e2e8f0';
-
-  const docTitle = document.createElement('span');
-  docTitle.style.fontSize = '12px';
-  docTitle.style.fontWeight = '700';
-  docTitle.style.color = options.theme === 'corporate' ? '#dc2626' : '#334155';
-  docTitle.innerText = options.fileName;
-
-  const sheetBadge = document.createElement('span');
-  sheetBadge.style.fontSize = '11px';
-  sheetBadge.style.color = '#64748b';
-  sheetBadge.style.fontWeight = '500';
-  sheetBadge.innerText = page.blocks.map((b) => b.sheetName).filter((v, i, a) => a.indexOf(v) === i).join(' • ');
-
-  header.appendChild(docTitle);
-  header.appendChild(sheetBadge);
-  container.appendChild(header);
-
-  // --- Konten Blok (1 atau 2 blok) ---
-  const body = document.createElement('div');
-  body.style.flex = '1';
-  body.style.display = 'flex';
-  body.style.flexDirection = 'column';
-  body.style.gap = '28px';
-
-  page.blocks.forEach((block: ContentBlock) => {
-    const blockWrapper = document.createElement('div');
-    blockWrapper.style.width = '100%';
-
-    if (options.showBlockHeaders && block.title) {
-      const blockTitle = document.createElement('div');
-      blockTitle.style.display = 'flex';
-      blockTitle.style.alignItems = 'center';
-      blockTitle.style.justifyContent = 'space-between';
-      blockTitle.style.marginBottom = '8px';
-
-      const titleText = document.createElement('span');
-      titleText.style.fontSize = '13px';
-      titleText.style.fontWeight = '700';
-      titleText.style.color = '#0f172a';
-      titleText.innerText = block.title;
-
-      const rangeTag = document.createElement('span');
-      rangeTag.style.fontSize = '10px';
-      rangeTag.style.fontFamily = 'monospace';
-      rangeTag.style.backgroundColor = '#f1f5f9';
-      rangeTag.style.color = '#475569';
-      rangeTag.style.padding = '2px 6px';
-      rangeTag.style.borderRadius = '4px';
-      rangeTag.innerText = block.rangeAddress;
-
-      blockTitle.appendChild(titleText);
-      blockTitle.appendChild(rangeTag);
-      blockWrapper.appendChild(blockTitle);
-    }
-
-    // Tabel
-    const table = document.createElement('table');
-    table.style.width = '100%';
-    table.style.borderCollapse = 'collapse';
-    table.style.fontSize = '11px';
-    table.style.lineHeight = '1.4';
-    table.style.tableLayout = 'auto';
-
-    if (options.theme === 'grid') {
-      table.style.border = '1px solid #cbd5e1';
-    } else {
-      table.style.border = '1px solid #e2e8f0';
-      table.style.borderRadius = '6px';
-      table.style.overflow = 'hidden';
-    }
-
-    block.data.forEach((row, rowIdx) => {
-      const tr = document.createElement('tr');
-      const isHeaderRow = rowIdx === 0;
-
-      if (isHeaderRow) {
-        if (options.theme === 'corporate') {
-          tr.style.backgroundColor = '#1e293b';
-          tr.style.color = '#ffffff';
-        } else if (options.theme === 'modern') {
-          tr.style.backgroundColor = '#f8fafc';
-          tr.style.color = '#0f172a';
-          tr.style.borderBottom = '2px solid #e2e8f0';
-        } else {
-          tr.style.backgroundColor = '#f1f5f9';
-          tr.style.color = '#0f172a';
-          tr.style.borderBottom = '1px solid #cbd5e1';
-        }
-      } else {
-        if (options.theme === 'modern') {
-          tr.style.backgroundColor = rowIdx % 2 === 0 ? '#ffffff' : '#f8fafc';
-          tr.style.borderBottom = '1px solid #f1f5f9';
-        } else if (options.theme === 'corporate') {
-          tr.style.backgroundColor = rowIdx % 2 === 0 ? '#ffffff' : '#fef2f2';
-          tr.style.borderBottom = '1px solid #fecaca';
-        } else {
-          tr.style.backgroundColor = '#ffffff';
-          tr.style.borderBottom = '1px solid #e2e8f0';
-        }
-      }
-
-      row.forEach((cellVal) => {
-        const cellTag = isHeaderRow ? 'th' : 'td';
-        const td = document.createElement(cellTag);
-        td.style.padding = isHeaderRow ? '7px 9px' : '5px 8px';
-        td.style.fontWeight = isHeaderRow ? '700' : '400';
-        td.style.border = options.theme === 'grid' ? '1px solid #cbd5e1' : 'none';
-
-        const strVal = String(cellVal ?? '');
-        td.innerText = strVal;
-
-        // Auto alignment: numeric values right aligned, text left
-        const isNumeric =
-          strVal.trim() !== '' &&
-          !isNaN(Number(strVal.replace(/[^0-9.-]+/g, ''))) &&
-          !isNaN(parseFloat(strVal));
-        if (isNumeric) {
-          td.style.textAlign = 'right';
-          td.style.fontVariantNumeric = 'tabular-nums';
-        } else {
-          td.style.textAlign = 'left';
-        }
-
-        tr.appendChild(td);
-      });
-
-      table.appendChild(tr);
-    });
-
-    blockWrapper.appendChild(table);
-    body.appendChild(blockWrapper);
-  });
-
-  container.appendChild(body);
-
-  // --- Footer Halaman ---
-  const footer = document.createElement('div');
-  footer.style.display = 'flex';
-  footer.style.justifyContent = 'space-between';
-  footer.style.alignItems = 'center';
-  footer.style.paddingTop = '14px';
-  footer.style.marginTop = '20px';
-  footer.style.borderTop = '1px solid #f1f5f9';
-  footer.style.fontSize = '10px';
-  footer.style.color = '#94a3b8';
-
-  const brand = document.createElement('span');
-  brand.innerText = 'PDFTools • 100% Client-Side Engine';
-
-  const pageNum = document.createElement('span');
-  pageNum.innerText = options.showPageNumbers
-    ? `Halaman ${page.pageNumber} dari ${totalPages}`
-    : '';
-
-  footer.appendChild(brand);
-  footer.appendChild(pageNum);
-  container.appendChild(footer);
-
-  document.body.appendChild(container);
-  return container;
+function getLuminance(r: number, g: number, b: number): number {
+  return 0.299 * r + 0.587 * g + 0.114 * b;
 }
 
 /**
- * Menghasilkan file PDF dari kelompok layout halaman Excel
+ * Merender 1 blok konten tabel ke dalam dokumen jsPDF
  */
-export async function generateExcelPdf(
-  pages: PageLayoutGroup[],
-  options: GeneratePdfOptions
-): Promise<Uint8Array> {
-  const pdfDoc = await PDFDocument.create();
+function renderBlockToDoc(
+  doc: jsPDF,
+  block: ContentBlock,
+  options: GeneratePdfOptions,
+  startY: number,
+  pageWidth: number,
+  isHeaderRowRequired: boolean = true
+): number {
+  // 1. Tampilkan Judul & Subtitle Blok jika diaktifkan
+  let currentY = startY;
 
-  // Dimensi poin A4: 595.28 x 841.89
-  const a4Width = options.pageSize === 'Letter' ? 612 : 595.28;
-  const a4Height = options.pageSize === 'Letter' ? 792 : 841.89;
-
-  for (let i = 0; i < pages.length; i++) {
-    const pageGroup = pages[i];
-    const progressPercent = Math.round(((i + 1) / pages.length) * 100);
-
-    options.onProgress?.(
-      progressPercent,
-      `Memproses halaman ${i + 1} dari ${pages.length}...`
-    );
-
-    // Tentukan orientasi
-    let isLandscape = false;
-    if (options.orientation === 'landscape') {
-      isLandscape = true;
-    } else if (options.orientation === 'auto') {
-      // Jika salah satu tabel memiliki lebih dari 6 kolom, otomatis lanskap
-      const maxCols = Math.max(...pageGroup.blocks.map((b) => b.colCount));
-      isLandscape = maxCols > 6;
+  if (options.showBlockHeaders) {
+    if (block.title) {
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(13);
+      doc.setTextColor(15, 23, 42); // #0F172A
+      doc.text(block.title, pageWidth / 2, currentY, { align: 'center' });
+      currentY += 15;
     }
 
-    const pageWidth = isLandscape ? a4Height : a4Width;
-    const pageHeight = isLandscape ? a4Width : a4Height;
-
-    // 1. Buat elemen DOM halaman
-    const pageEl = createPageDomElement(
-      pageGroup,
-      pages.length,
-      options,
-      isLandscape
-    );
-
-    try {
-      // 2. Render ke Canvas dengan 2x scale (tajam beresolusi tinggi)
-      const canvas = await html2canvas(pageEl, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#ffffff',
-        logging: false,
-      });
-
-      // 3. Konversi canvas ke PNG Data URL
-      const imgDataUrl = canvas.toDataURL('image/png');
-      const pngImageBytes = await fetch(imgDataUrl).then((res) =>
-        res.arrayBuffer()
-      );
-      const embeddedImage = await pdfDoc.embedPng(pngImageBytes);
-
-      // 4. Tambahkan halaman ke dokumen PDF
-      const pdfPage = pdfDoc.addPage([pageWidth, pageHeight]);
-      pdfPage.drawImage(embeddedImage, {
-        x: 0,
-        y: 0,
-        width: pageWidth,
-        height: pageHeight,
-      });
-    } finally {
-      // Bersihkan DOM tersembunyi
-      if (pageEl.parentNode) {
-        pageEl.parentNode.removeChild(pageEl);
-      }
+    if (block.subtitle) {
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.setTextColor(51, 65, 85); // #334155
+      doc.text(block.subtitle, pageWidth / 2, currentY, { align: 'center' });
+      currentY += 13;
+    } else {
+      currentY += 2;
     }
   }
 
-  options.onProgress?.(100, 'Menyusun dokumen PDF final...');
-  return await pdfDoc.save();
+  // 2. Siapkan data baris untuk autoTable
+  // Pisahkan baris pertama sebagai head jika baris tersebut memiliki warna/bold atau di posisi 0
+  const bodyRows: any[][] = [];
+
+  for (let r = 0; r < block.cells.length; r++) {
+    const rowCells = block.cells[r];
+    const rowValues: any[] = [];
+
+    for (let c = 0; c < rowCells.length; c++) {
+      const cellMeta = rowCells[c];
+      if (cellMeta.isMergedChild) {
+        // Lewati sel anak hasil span karena akan digambar oleh master cell
+        continue;
+      }
+
+      const cellObj: any = {
+        content: cellMeta.text || '',
+        rowSpan: cellMeta.rowSpan || 1,
+        colSpan: cellMeta.colSpan || 1,
+        styles: {},
+      };
+
+      // Alignment
+      if (cellMeta.align) {
+        cellObj.styles.halign = cellMeta.align;
+      }
+
+      // Font Style
+      if (cellMeta.bold) {
+        cellObj.styles.fontStyle = 'bold';
+      }
+
+      // Theme Colors Mapping
+      if (options.theme === 'dual_optimized') {
+        // Tema Dual-Optimized: Kontras Tinggi + Ramah Cetak Hitam Putih
+        if (cellMeta.fillColor) {
+          const rgb = hexToRgb(cellMeta.fillColor);
+          if (rgb) {
+            cellObj.styles.fillColor = rgb;
+            const lum = getLuminance(rgb[0], rgb[1], rgb[2]);
+
+            // Jika latar belakang terang (Gold/Kuning/Cyan), gunakan teks gelap tebal
+            // Jika latar belakang gelap (Hijau Tua/Navy), gunakan teks putih tebal
+            if (lum > 140) {
+              cellObj.styles.textColor = [15, 23, 42]; // #0F172A
+              cellObj.styles.fontStyle = 'bold';
+            } else {
+              cellObj.styles.textColor = [255, 255, 255]; // Putih bersih
+              cellObj.styles.fontStyle = 'bold';
+            }
+          }
+        } else {
+          // Sel tanpa background fill: teks hitam pekat/slate
+          cellObj.styles.textColor = [15, 23, 42];
+        }
+
+        // Garis batas tajam dan jelas
+        cellObj.styles.lineColor = [51, 65, 85]; // #334155
+        cellObj.styles.lineWidth = 0.5;
+      } else if (options.theme === 'excel_native') {
+        // Tema Asli Excel
+        if (cellMeta.fillColor) {
+          const rgb = hexToRgb(cellMeta.fillColor);
+          if (rgb) cellObj.styles.fillColor = rgb;
+        }
+        if (cellMeta.textColor) {
+          const trgb = hexToRgb(cellMeta.textColor);
+          if (trgb) cellObj.styles.textColor = trgb;
+        } else {
+          cellObj.styles.textColor = [15, 23, 42];
+        }
+        cellObj.styles.lineColor = [148, 163, 184];
+        cellObj.styles.lineWidth = 0.5;
+      } else if (options.theme === 'monochrome') {
+        // Tema Monokrom Murni (Hitam Putih / Abu Ringan)
+        if (cellMeta.fillColor) {
+          const rgb = hexToRgb(cellMeta.fillColor);
+          if (rgb) {
+            const lum = getLuminance(rgb[0], rgb[1], rgb[2]);
+            if (lum < 120) {
+              cellObj.styles.fillColor = [226, 232, 240];
+              cellObj.styles.textColor = [15, 23, 42];
+              cellObj.styles.fontStyle = 'bold';
+            } else {
+              cellObj.styles.fillColor = [241, 245, 249];
+              cellObj.styles.textColor = [15, 23, 42];
+            }
+          }
+        } else {
+          cellObj.styles.textColor = [15, 23, 42];
+        }
+        cellObj.styles.lineColor = [15, 23, 42];
+        cellObj.styles.lineWidth = 0.5;
+      } else {
+        // Modern Clean
+        if (r === 0) {
+          cellObj.styles.fillColor = [16, 185, 129]; // Emerald
+          cellObj.styles.textColor = [255, 255, 255];
+          cellObj.styles.fontStyle = 'bold';
+        } else if (r % 2 === 1) {
+          cellObj.styles.fillColor = [248, 250, 252];
+        }
+        cellObj.styles.lineColor = [226, 232, 240];
+        cellObj.styles.lineWidth = 0.5;
+      }
+
+      rowValues.push(cellObj);
+    }
+
+    bodyRows.push(rowValues);
+  }
+
+  // Margin horizontal yang nyaman agar tidak terpotong printer
+  const marginSide = 32;
+
+  // 3. Render tabel dengan autoTable
+  autoTable(doc, {
+    startY: currentY,
+    body: bodyRows,
+    theme: 'grid',
+    styles: {
+      font: 'helvetica',
+      fontSize: block.colCount > 7 ? 7.5 : 8.5,
+      cellPadding: { top: 3.5, bottom: 3.5, left: 4, right: 4 },
+      overflow: 'linebreak',
+    },
+    margin: { left: marginSide, right: marginSide },
+    tableWidth: pageWidth - marginSide * 2,
+    didDrawPage: (data) => {
+      // Callback tiap halaman jika tabel bersambung
+    },
+  });
+
+  const lastTable = (doc as any).lastAutoTable;
+  return lastTable ? lastTable.finalY + 18 : currentY + 100;
+}
+
+/**
+ * Menghasilkan PDF gabungan dari beberapa kelompok halaman (PageLayoutGroup)
+ */
+export async function generateCombinedPdf(
+  pages: PageLayoutGroup[],
+  options: GeneratePdfOptions
+): Promise<Uint8Array> {
+  const isLandscape =
+    options.orientation === 'landscape' ||
+    (options.orientation === 'auto' &&
+      pages.some((p) => p.blocks.some((b) => b.colCount > 8)));
+
+  const orient = isLandscape ? 'landscape' : 'portrait';
+  const format = options.pageSize === 'Letter' ? 'letter' : 'a4';
+
+  const doc = new jsPDF({
+    orientation: orient,
+    unit: 'pt',
+    format: format,
+  });
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const totalPages = pages.length;
+
+  for (let i = 0; i < pages.length; i++) {
+    if (i > 0) {
+      doc.addPage(format, orient);
+    }
+
+    const pageGroup = pages[i];
+    if (options.onProgress) {
+      const pct = Math.round(((i + 1) / totalPages) * 100);
+      options.onProgress(pct, `Memproses halaman ${i + 1} dari ${totalPages}...`);
+    }
+
+    let currentY = 36;
+
+    // Render blok-blok pada halaman ini
+    for (const block of pageGroup.blocks) {
+      currentY = renderBlockToDoc(doc, block, options, currentY, pageWidth);
+    }
+
+    // Footer Dokumen
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.5);
+    doc.setTextColor(148, 163, 184); // #94A3B8
+
+    // Footer Kiri
+    doc.text('PDFTools ? 100% Client-Side Engine', 32, pageHeight - 20);
+
+    // Footer Kanan
+    if (options.showPageNumbers) {
+      doc.text(`Halaman ${i + 1} dari ${totalPages}`, pageWidth - 32, pageHeight - 20, {
+        align: 'right',
+      });
+    }
+  }
+
+  const arrayBuffer = doc.output('arraybuffer');
+  return new Uint8Array(arrayBuffer);
+}
+
+/**
+ * Menghasilkan PDF tunggal untuk satu blok tabel tertentu
+ */
+export async function generateSingleBlockPdf(
+  block: ContentBlock,
+  options: GeneratePdfOptions
+): Promise<Uint8Array> {
+  const isLandscape =
+    options.orientation === 'landscape' ||
+    (options.orientation === 'auto' && block.colCount > 8);
+
+  const orient = isLandscape ? 'landscape' : 'portrait';
+  const format = options.pageSize === 'Letter' ? 'letter' : 'a4';
+
+  const doc = new jsPDF({
+    orientation: orient,
+    unit: 'pt',
+    format: format,
+  });
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+
+  renderBlockToDoc(doc, block, options, 40, pageWidth);
+
+  // Footer
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8.5);
+  doc.setTextColor(148, 163, 184);
+  doc.text('PDFTools ? 100% Client-Side Engine', 32, pageHeight - 20);
+
+  if (options.showPageNumbers) {
+    doc.text('Halaman 1 dari 1', pageWidth - 32, pageHeight - 20, { align: 'right' });
+  }
+
+  const arrayBuffer = doc.output('arraybuffer');
+  return new Uint8Array(arrayBuffer);
+}
+
+/**
+ * Menghasilkan Arsip ZIP yang mengorganisir setiap tabel ke file PDF terpisah
+ * dengan struktur folder per bulan secara otomatis
+ */
+export async function generateZipArchive(
+  blocks: ContentBlock[],
+  options: GeneratePdfOptions
+): Promise<Blob> {
+  const zip = new JSZip();
+  const selectedBlocks = blocks
+    .filter((b) => b.selected)
+    .sort((a, b) => a.order - b.order);
+
+  const total = selectedBlocks.length;
+  if (total === 0) {
+    throw new Error('Tidak ada blok tabel yang dipilih untuk diekspor.');
+  }
+
+  for (let i = 0; i < total; i++) {
+    const block = selectedBlocks[i];
+    if (options.onProgress) {
+      const pct = Math.round(((i + 1) / total) * 100);
+      options.onProgress(pct, `Membuat PDF ${i + 1}/${total}: ${block.suggestedFileName}...`);
+    }
+
+    const pdfBytes = await generateSingleBlockPdf(block, options);
+
+    // Letakkan dalam folder per bulan jika terdeteksi (misal: 'JULI 2026/Teller - 01 JULI 2026 SHIF 1.pdf')
+    let filePath = block.suggestedFileName;
+    if (block.monthFolder) {
+      filePath = `${block.monthFolder}/${block.suggestedFileName}`;
+    }
+
+    zip.file(filePath, pdfBytes);
+  }
+
+  if (options.onProgress) {
+    options.onProgress(98, 'Mengompresi seluruh file ke format ZIP...');
+  }
+
+  const zipBlob = await zip.generateAsync({
+    type: 'blob',
+    compression: 'DEFLATE',
+    compressionOptions: { level: 6 },
+  });
+
+  return zipBlob;
 }

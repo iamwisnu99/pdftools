@@ -3,19 +3,22 @@
 import React, { useState, useRef, useMemo } from 'react';
 import {
   FileSpreadsheet,
-  UploadCloud,
-  CheckCircle2,
-  ArrowRight,
-  ArrowUp,
-  ArrowDown,
   RotateCcw,
   Download,
   Layers,
-  FileCheck,
   Grid,
   FileText,
   Palette,
   Sparkles,
+  Search,
+  Eye,
+  Archive,
+  X,
+  Printer,
+  Calendar,
+  ArrowUp,
+  ArrowDown,
+  CheckCircle2,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import {
@@ -23,37 +26,53 @@ import {
   ContentBlock,
   parseExcelWorkbook,
   PaginationMode,
+  DetectionMode,
   groupBlocksIntoPages,
 } from './excelBlockDetector';
 import {
-  generateExcelPdf,
+  generateCombinedPdf,
+  generateSingleBlockPdf,
+  generateZipArchive,
   TableTheme,
   PageOrientation,
 } from './excelPdfGenerator';
 import styles from './ExcelToPdfWorkspace.module.css';
 
 export default function ExcelToPdfWorkspace() {
+  const [fileBuffer, setFileBuffer] = useState<ArrayBuffer | null>(null);
+  const [fileName, setFileName] = useState<string>('');
   const [workbook, setWorkbook] = useState<ParsedWorkbook | null>(null);
   const [activeSheet, setActiveSheet] = useState<string>('');
   const [blocks, setBlocks] = useState<ContentBlock[]>([]);
-  const [paginationMode, setPaginationMode] = useState<PaginationMode>('two_if_fit');
+  const [detectionMode, setDetectionMode] = useState<DetectionMode>('smart_blocks');
+  const [paginationMode, setPaginationMode] = useState<PaginationMode>('one_per_page');
   const [orientation, setOrientation] = useState<PageOrientation>('auto');
-  const [theme, setTheme] = useState<TableTheme>('modern');
+  const [theme, setTheme] = useState<TableTheme>('dual_optimized');
+
+  // Filter & Search
+  const [searchQuery, setSearchQuery] = useState<string>('');
+
+  // Preview Modal
+  const [previewingBlock, setPreviewingBlock] = useState<ContentBlock | null>(null);
 
   // Generation state
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState({ percent: 0, status: '' });
-  const [resultPdfUrl, setResultPdfUrl] = useState<string | null>(null);
-  const [resultPdfSize, setResultPdfSize] = useState<string>('');
+  const [resultDownloadUrl, setResultDownloadUrl] = useState<string | null>(null);
+  const [resultFileName, setResultFileName] = useState<string>('');
+  const [resultSize, setResultSize] = useState<string>('');
+  const [resultType, setResultType] = useState<'pdf' | 'zip'>('pdf');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Handle file drop / upload
+  // Membaca file Excel
   const handleFileChange = async (file: File) => {
     try {
       const buffer = await file.arrayBuffer();
-      const parsed = await parseExcelWorkbook(buffer, file.name);
+      setFileBuffer(buffer);
+      setFileName(file.name);
 
+      const parsed = await parseExcelWorkbook(buffer, file.name, detectionMode);
       setWorkbook(parsed);
       setActiveSheet(parsed.activeSheet);
 
@@ -63,10 +82,28 @@ export default function ExcelToPdfWorkspace() {
         initialBlocks.push(...(parsed.blocksBySheet[sheetName] || []));
       });
       setBlocks(initialBlocks);
-      setResultPdfUrl(null);
+      setResultDownloadUrl(null);
     } catch (err) {
       console.error('Gagal membaca file Excel:', err);
       alert('Gagal membaca berkas Excel. Pastikan berkas berformat .xlsx, .xls, atau .csv valid.');
+    }
+  };
+
+  // Re-parse jika user mengubah mode deteksi
+  const handleDetectionModeChange = async (newMode: DetectionMode) => {
+    setDetectionMode(newMode);
+    if (fileBuffer && fileName) {
+      try {
+        const parsed = await parseExcelWorkbook(fileBuffer, fileName, newMode);
+        setWorkbook(parsed);
+        const initialBlocks: ContentBlock[] = [];
+        parsed.sheetNames.forEach((sheetName) => {
+          initialBlocks.push(...(parsed.blocksBySheet[sheetName] || []));
+        });
+        setBlocks(initialBlocks);
+      } catch (err) {
+        console.error('Gagal memproses ulang mode deteksi:', err);
+      }
     }
   };
 
@@ -77,31 +114,26 @@ export default function ExcelToPdfWorkspace() {
     }
   };
 
-  // Switch sheet view
   const handleSheetSwitch = (sheetName: string) => {
     setActiveSheet(sheetName);
   };
 
-  // Toggle selection blok
   const handleToggleBlock = (blockId: string) => {
     setBlocks((prev) =>
       prev.map((b) => (b.id === blockId ? { ...b, selected: !b.selected } : b))
     );
   };
 
-  // Bulk select / deselect
   const handleSelectAll = (select: boolean) => {
     setBlocks((prev) => prev.map((b) => ({ ...b, selected: select })));
   };
 
-  // Update judul blok
   const handleUpdateTitle = (blockId: string, newTitle: string) => {
     setBlocks((prev) =>
       prev.map((b) => (b.id === blockId ? { ...b, title: newTitle } : b))
     );
   };
 
-  // Reorder blok (naik / turun)
   const handleMoveBlock = (index: number, direction: 'up' | 'down') => {
     const targetIdx = direction === 'up' ? index - 1 : index + 1;
     if (targetIdx < 0 || targetIdx >= blocks.length) return;
@@ -111,7 +143,6 @@ export default function ExcelToPdfWorkspace() {
     newBlocks[index] = newBlocks[targetIdx];
     newBlocks[targetIdx] = temp;
 
-    // Perbarui properti order
     newBlocks.forEach((b, i) => {
       b.order = i + 1;
     });
@@ -119,36 +150,49 @@ export default function ExcelToPdfWorkspace() {
     setBlocks(newBlocks);
   };
 
-  // Reset
   const handleReset = () => {
+    setFileBuffer(null);
+    setFileName('');
     setWorkbook(null);
     setBlocks([]);
-    setResultPdfUrl(null);
+    setResultDownloadUrl(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   };
 
-  // Kalkulasi estimasi halaman
-  const previewPages = useMemo(() => {
-    return groupBlocksIntoPages(blocks, paginationMode);
-  }, [blocks, paginationMode]);
+  // Filter blok berdasarkan sheet aktif dan query pencarian
+  const visibleBlocks = useMemo(() => {
+    return blocks.filter((b) => {
+      const matchSheet = !activeSheet || b.sheetName === activeSheet;
+      if (!matchSheet) return false;
+      if (!searchQuery.trim()) return true;
+      const q = searchQuery.toLowerCase();
+      return (
+        b.title.toLowerCase().includes(q) ||
+        (b.subtitle && b.subtitle.toLowerCase().includes(q)) ||
+        (b.dateStr && b.dateStr.toLowerCase().includes(q)) ||
+        (b.sectionName && b.sectionName.toLowerCase().includes(q)) ||
+        b.rangeAddress.toLowerCase().includes(q)
+      );
+    });
+  }, [blocks, activeSheet, searchQuery]);
 
   const selectedCount = useMemo(() => {
     return blocks.filter((b) => b.selected).length;
   }, [blocks]);
 
-  // Eksekusi Konversi
-  const handleGeneratePdf = async () => {
+  // Eksekusi Konversi: PDF Gabungan
+  const handleGenerateCombinedPdf = async () => {
     if (!workbook || selectedCount === 0) return;
 
     setIsGenerating(true);
-    setProgress({ percent: 10, status: 'Mempersiapkan blok tabel...' });
+    setProgress({ percent: 5, status: 'Menyiapkan layout tabel...' });
 
     try {
       const pages = groupBlocksIntoPages(blocks, paginationMode);
 
-      const pdfBytes = await generateExcelPdf(pages, {
+      const pdfBytes = await generateCombinedPdf(pages, {
         fileName: workbook.fileName,
         theme,
         orientation,
@@ -162,12 +206,14 @@ export default function ExcelToPdfWorkspace() {
 
       const blob = new Blob([pdfBytes as any], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
-
       const sizeMb = (blob.size / (1024 * 1024)).toFixed(2);
-      setResultPdfSize(`${sizeMb} MB`);
-      setResultPdfUrl(url);
 
-      // Trigger Confetti
+      const outName = `${workbook.fileName.replace(/\.[^/.]+$/, '')}_Lengkap.pdf`;
+      setResultFileName(outName);
+      setResultSize(`${sizeMb} MB`);
+      setResultType('pdf');
+      setResultDownloadUrl(url);
+
       confetti({
         particleCount: 80,
         spread: 60,
@@ -175,10 +221,80 @@ export default function ExcelToPdfWorkspace() {
         colors: ['#10b981', '#059669', '#34d9a1'],
       });
     } catch (err) {
-      console.error('Gagal generate PDF:', err);
+      console.error('Gagal generate PDF gabungan:', err);
       alert('Terjadi kesalahan saat membuat dokumen PDF.');
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  // Eksekusi Konversi: ZIP Arsip Folder
+  const handleGenerateZip = async () => {
+    if (!workbook || selectedCount === 0) return;
+
+    setIsGenerating(true);
+    setProgress({ percent: 5, status: 'Menyiapkan paket arsip ZIP...' });
+
+    try {
+      const zipBlob = await generateZipArchive(blocks, {
+        fileName: workbook.fileName,
+        theme,
+        orientation,
+        pageSize: 'A4',
+        showPageNumbers: true,
+        showBlockHeaders: true,
+        onProgress: (percent, status) => {
+          setProgress({ percent, status });
+        },
+      });
+
+      const url = URL.createObjectURL(zipBlob);
+      const sizeMb = (zipBlob.size / (1024 * 1024)).toFixed(2);
+
+      const outName = `${workbook.fileName.replace(/\.[^/.]+$/, '')}_PerTabel_ZIP.zip`;
+      setResultFileName(outName);
+      setResultSize(`${sizeMb} MB`);
+      setResultType('zip');
+      setResultDownloadUrl(url);
+
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#3b82f6', '#2563eb', '#10b981'],
+      });
+    } catch (err) {
+      console.error('Gagal generate arsip ZIP:', err);
+      alert('Terjadi kesalahan saat memproses arsip ZIP.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  // Download PDF Tunggal langsung dari modal pratinjau
+  const handleDownloadSinglePdf = async (block: ContentBlock) => {
+    try {
+      const pdfBytes = await generateSingleBlockPdf(block, {
+        fileName: block.suggestedFileName,
+        theme,
+        orientation,
+        pageSize: 'A4',
+        showPageNumbers: true,
+        showBlockHeaders: true,
+      });
+
+      const blob = new Blob([pdfBytes as any], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = block.suggestedFileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Gagal unduh single PDF:', err);
+      alert('Gagal mengunduh berkas PDF tunggal.');
     }
   };
 
@@ -194,13 +310,13 @@ export default function ExcelToPdfWorkspace() {
         <div className={styles.headerSection}>
           <div className={styles.toolBadge}>
             <Sparkles size={14} />
-            <span>BARU • DETEKSI MULTI-KONTEN CERDAS</span>
+            <span>DETEKSI 2D MULTI-TABEL • DUAL PRINT CONTRAST</span>
           </div>
-          <h1 className={styles.title}>Konversi Excel (XLSX) ke PDF</h1>
+          <h1 className={styles.title}>Konversi Excel (XLSX) ke PDF Cerdas</h1>
           <p className={styles.subtitle}>
-            Ubah sheet Excel menjadi PDF rapi dengan tata letak presisi. Secara otomatis
-            mendeteksi blok tabel terpisah, atur urutan halaman, dan pilih apakah ingin mencetak 1
-            konten per halaman atau 2 konten jika mencukupi.
+            Ekstrak data dari format tabel Excel apa pun secara dinamis. Mendeteksi tabel berdampingan
+            (Shift 1-3) &amp; bertumpuk, menjaga warna dan border asli, serta dioptimalkan untuk cetak
+            warna maupun hitam putih berdaya baca tinggi.
           </p>
         </div>
 
@@ -225,16 +341,16 @@ export default function ExcelToPdfWorkspace() {
                 }}
               />
               <div className={styles.uploadIconCircle}>
-                <FileSpreadsheet size={34} />
+                <FileSpreadsheet size={36} />
               </div>
               <h3 className={styles.dropTitle}>Pilih atau Letakkan Berkas Excel di Sini</h3>
               <p className={styles.dropSubtitle}>
-                Mendukung dokumen .xlsx, .xls, dan .csv • 100% Client-Side & Privat
+                Mendukung .xlsx, .xls, .csv • 100% Client-Side &amp; Privasi Terjaga
               </p>
               <div className={styles.dropPills}>
-                <span className={styles.dropPill}>Deteksi Tabel Otomatis</span>
-                <span className={styles.dropPill}>Pilih & Urutkan Blok</span>
-                <span className={styles.dropPill}>1 atau 2 Konten / Lembar</span>
+                <span className={styles.dropPill}>Deteksi 2D Tabel Berdampingan</span>
+                <span className={styles.dropPill}>Preservasi Warna &amp; Merge Cell</span>
+                <span className={styles.dropPill}>Ekspor PDF Gabungan &amp; ZIP Folder</span>
               </div>
             </div>
           </div>
@@ -247,19 +363,21 @@ export default function ExcelToPdfWorkspace() {
             <div className={styles.editorHeader}>
               <div className={styles.fileMeta}>
                 <div className={styles.fileIconBadge}>
-                  <FileSpreadsheet size={20} />
+                  <FileSpreadsheet size={22} />
                 </div>
                 <div>
                   <div className={styles.fileName}>{workbook.fileName}</div>
                   <div className={styles.fileSubText}>
-                    {workbook.sheetNames.length} Sheet • {blocks.length} Blok Konten Terdeteksi
+                    <span>{workbook.sheetNames.length} Sheet</span>
+                    <span>•</span>
+                    <span>{blocks.length} Tabel Terdeteksi</span>
                   </div>
                 </div>
               </div>
 
-              <div className={headerActionsClass(styles)}>
+              <div className={styles.headerActions}>
                 <button type="button" onClick={handleReset} className={styles.resetBtn}>
-                  <RotateCcw size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+                  <RotateCcw size={14} />
                   Ganti Berkas
                 </button>
               </div>
@@ -285,12 +403,107 @@ export default function ExcelToPdfWorkspace() {
 
             {/* Settings Panel */}
             <div className={styles.settingsPanel}>
-              {/* Row 1: Mode Paginasi (Yang diminta user) */}
+              {/* Row 1: Mode Deteksi Blok & Tema */}
               <div className={styles.settingsRow}>
+                {/* Mode Deteksi Blok */}
+                <div className={styles.settingGroup}>
+                  <span className={styles.settingLabel}>
+                    <Grid size={15} />
+                    Logika Deteksi Blok:
+                  </span>
+                  <div className={styles.optionPillGroup}>
+                    <button
+                      type="button"
+                      onClick={() => handleDetectionModeChange('smart_blocks')}
+                      className={`${styles.optionPill} ${
+                        detectionMode === 'smart_blocks' ? styles.optionPillActive : ''
+                      }`}
+                      title="Mendeteksi pulau tabel terpisah secara horizontal (side-by-side) dan vertikal"
+                    >
+                      <Sparkles size={14} />
+                      Otomatis 2D (Side-by-Side &amp; Stack)
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleDetectionModeChange('row_breaks')}
+                      className={`${styles.optionPill} ${
+                        detectionMode === 'row_breaks' ? styles.optionPillActive : ''
+                      }`}
+                    >
+                      <Layers size={14} />
+                      Bagi Baris Kosong
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleDetectionModeChange('per_sheet')}
+                      className={`${styles.optionPill} ${
+                        detectionMode === 'per_sheet' ? styles.optionPillActive : ''
+                      }`}
+                    >
+                      <FileText size={14} />
+                      1 Sheet Utuh
+                    </button>
+                  </div>
+                </div>
+
+                {/* Gaya Tampilan & Cetak */}
+                <div className={styles.settingGroup}>
+                  <span className={styles.settingLabel}>
+                    <Palette size={14} />
+                    Gaya &amp; Kontras Cetak:
+                  </span>
+                  <div className={styles.optionPillGroup}>
+                    <button
+                      type="button"
+                      onClick={() => setTheme('dual_optimized')}
+                      className={`${styles.optionPill} ${
+                        theme === 'dual_optimized' ? styles.optionPillActive : ''
+                      }`}
+                      title="Warna tajam pada layar + kontras tinggi terbaca saat dicetak hitam putih"
+                    >
+                      <Printer size={14} />
+                      Dual (Warna &amp; Print B/W)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setTheme('excel_native')}
+                      className={`${styles.optionPill} ${
+                        theme === 'excel_native' ? styles.optionPillActive : ''
+                      }`}
+                    >
+                      Warna Asli Excel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setTheme('monochrome')}
+                      className={`${styles.optionPill} ${
+                        theme === 'monochrome' ? styles.optionPillActive : ''
+                      }`}
+                    >
+                      Hitam Putih Murni
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setTheme('modern')}
+                      className={`${styles.optionPill} ${
+                        theme === 'modern' ? styles.optionPillActive : ''
+                      }`}
+                    >
+                      Modern Emerald
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Row 2: Tata Letak Paginasi & Orientasi */}
+              <div className={styles.settingsRow}>
+                {/* Mode Paginasi */}
                 <div className={styles.settingGroup}>
                   <span className={styles.settingLabel}>
                     <Layers size={15} />
-                    Tata Letak Paginasi (Aturan Halaman):
+                    Paginasi Lembar:
                   </span>
                   <div className={styles.optionPillGroup}>
                     <button
@@ -301,7 +514,7 @@ export default function ExcelToPdfWorkspace() {
                       }`}
                     >
                       <FileText size={14} />
-                      1 Konten per Halaman
+                      1 Tabel per Halaman
                     </button>
 
                     <button
@@ -312,7 +525,7 @@ export default function ExcelToPdfWorkspace() {
                       }`}
                     >
                       <Layers size={14} />
-                      2 Konten per Halaman (Jika Muat)
+                      2 Tabel (Jika Muat)
                     </button>
 
                     <button
@@ -323,14 +536,14 @@ export default function ExcelToPdfWorkspace() {
                       }`}
                     >
                       <Grid size={14} />
-                      Kompak Mengalir (Flow)
+                      Mengalir Terus
                     </button>
                   </div>
                 </div>
 
-                {/* Row 2: Orientasi Kertas */}
+                {/* Orientasi Kertas */}
                 <div className={styles.settingGroup}>
-                  <span className={styles.settingLabel}>Orientasi Lembar:</span>
+                  <span className={styles.settingLabel}>Orientasi Kertas:</span>
                   <div className={styles.optionPillGroup}>
                     <button
                       type="button"
@@ -339,7 +552,7 @@ export default function ExcelToPdfWorkspace() {
                         orientation === 'auto' ? styles.optionPillActive : ''
                       }`}
                     >
-                      Otomatis (Sesuai Kolom)
+                      Otomatis
                     </button>
                     <button
                       type="button"
@@ -361,183 +574,293 @@ export default function ExcelToPdfWorkspace() {
                     </button>
                   </div>
                 </div>
-
-                {/* Row 3: Tema Tabel */}
-                <div className={styles.settingGroup}>
-                  <span className={styles.settingLabel}>
-                    <Palette size={14} />
-                    Gaya Tampilan:
-                  </span>
-                  <div className={styles.optionPillGroup}>
-                    <button
-                      type="button"
-                      onClick={() => setTheme('modern')}
-                      className={`${styles.optionPill} ${
-                        theme === 'modern' ? styles.optionPillActive : ''
-                      }`}
-                    >
-                      Modern Minimalist
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setTheme('corporate')}
-                      className={`${styles.optionPill} ${
-                        theme === 'corporate' ? styles.optionPillActive : ''
-                      }`}
-                    >
-                      Adobe Corporate
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setTheme('grid')}
-                      className={`${styles.optionPill} ${
-                        theme === 'grid' ? styles.optionPillActive : ''
-                      }`}
-                    >
-                      Garis Grid
-                    </button>
-                  </div>
-                </div>
               </div>
             </div>
 
             {/* Blocks Section */}
             <div className={styles.blocksSection}>
               <div className={styles.blocksSectionHeader}>
-                <div className={styles.blocksCountTitle}>
-                  Blok Konten yang Terdeteksi ({blocks.length} blok)
+                <div className={styles.blocksHeaderLeft}>
+                  <div className={styles.blocksCountTitle}>
+                    Daftar Tabel ({visibleBlocks.length}{' '}
+                    {visibleBlocks.length !== blocks.length ? `dari ${blocks.length}` : ''})
+                  </div>
+
+                  {/* Input Pencarian */}
+                  <div className={styles.searchBarWrapper}>
+                    <Search size={14} className={styles.searchIcon} />
+                    <input
+                      type="text"
+                      placeholder="Cari tanggal, shift, judul..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className={styles.searchInput}
+                    />
+                  </div>
                 </div>
-                <div>
+
+                <div className={styles.blocksControlsRight}>
                   <button
                     type="button"
                     onClick={() => handleSelectAll(true)}
                     className={styles.bulkSelectBtn}
-                    style={{ marginRight: '1rem' }}
                   >
                     Pilih Semua
                   </button>
+                  <span style={{ color: 'var(--border-color)' }}>|</span>
                   <button
                     type="button"
                     onClick={() => handleSelectAll(false)}
                     className={styles.bulkSelectBtn}
                   >
-                    Batalkan Semua
+                    Kosongkan
                   </button>
                 </div>
               </div>
 
-              {/* Grid Kartu Blok */}
+              {/* Grid Kartu Tabel */}
               <div className={styles.blocksGrid}>
-                {blocks.map((block, idx) => (
-                  <div
-                    key={block.id}
-                    className={`${styles.blockCard} ${
-                      block.selected ? styles.blockCardSelected : styles.blockCardUnselected
-                    }`}
-                  >
-                    {/* Top Row: Order Badge & Checkbox */}
-                    <div className={styles.blockTopRow}>
-                      <span className={styles.orderBadge}>#{idx + 1}</span>
-                      <label className={styles.blockCheckboxLabel}>
+                {visibleBlocks.map((block) => {
+                  const globalIdx = blocks.findIndex((b) => b.id === block.id);
+                  return (
+                    <div
+                      key={block.id}
+                      className={`${styles.blockCard} ${
+                        block.selected ? styles.blockCardSelected : styles.blockCardUnselected
+                      }`}
+                    >
+                      {/* Baris Atas: Order & Checkbox */}
+                      <div className={styles.blockTopRow}>
+                        <span className={styles.orderBadge}>#{block.order}</span>
+                        <label className={styles.blockCheckboxLabel}>
+                          <input
+                            type="checkbox"
+                            checked={block.selected}
+                            onChange={() => handleToggleBlock(block.id)}
+                            className={styles.blockCheckbox}
+                          />
+                          <span style={{ fontSize: '0.8125rem', fontWeight: 600 }}>Cetak</span>
+                        </label>
+                      </div>
+
+                      {/* Judul & Subtitle */}
+                      <div>
                         <input
-                          type="checkbox"
-                          checked={block.selected}
-                          onChange={() => handleToggleBlock(block.id)}
-                          className={styles.blockCheckbox}
+                          type="text"
+                          value={block.title}
+                          onChange={(e) => handleUpdateTitle(block.id, e.target.value)}
+                          className={styles.blockTitleInput}
                         />
-                        <span style={{ fontSize: '0.8125rem', fontWeight: 600 }}>
-                          {block.selected ? 'Sertakan' : 'Lewati'}
+                        {block.subtitle && (
+                          <div className={styles.blockSubtitle}>
+                            <Calendar size={12} />
+                            <span>{block.subtitle}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Pills Metadata */}
+                      <div className={styles.blockMetaPills}>
+                        <span className={styles.rangePill}>{block.rangeAddress}</span>
+                        {block.monthFolder && (
+                          <span className={styles.folderPill}>
+                            📁 {block.monthFolder}
+                          </span>
+                        )}
+                        <span className={styles.statsPill}>
+                          {block.rowCount} bgs × {block.colCount} kol
                         </span>
-                      </label>
-                    </div>
+                      </div>
 
-                    {/* Judul Input */}
-                    <input
-                      type="text"
-                      value={block.title}
-                      onChange={(e) => handleUpdateTitle(block.id, e.target.value)}
-                      className={styles.blockTitleInput}
-                      title="Klik untuk mengubah judul"
-                    />
+                      {/* Mini Table Preview */}
+                      <div className={styles.tablePreviewWrapper}>
+                        <table className={styles.miniTable}>
+                          <tbody>
+                            {block.cells.slice(0, 5).map((row, rIdx) => (
+                              <tr key={rIdx}>
+                                {row.map((cell, cIdx) => {
+                                  if (cell.isMergedChild) return null;
+                                  return (
+                                    <td
+                                      key={cIdx}
+                                      colSpan={cell.colSpan || 1}
+                                      rowSpan={cell.rowSpan || 1}
+                                      style={{
+                                        backgroundColor: cell.fillColor || undefined,
+                                        color:
+                                          cell.fillColor && theme === 'dual_optimized'
+                                            ? '#0F172A'
+                                            : cell.textColor || undefined,
+                                        fontWeight: cell.bold || rIdx === 0 ? 700 : 400,
+                                        textAlign: cell.align || 'left',
+                                      }}
+                                    >
+                                      {cell.text}
+                                    </td>
+                                  );
+                                })}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
 
-                    {/* Meta Pills */}
-                    <div className={styles.blockMetaPills}>
-                      <span className={styles.rangePill}>{block.rangeAddress}</span>
-                      <span className={styles.statsPill}>
-                        {block.rowCount} baris × {block.colCount} kolom
-                      </span>
-                    </div>
+                      {/* Footer Kartu: Pratinjau & Urutan */}
+                      <div className={styles.blockCardFooter}>
+                        <button
+                          type="button"
+                          onClick={() => setPreviewingBlock(block)}
+                          className={styles.previewBtn}
+                        >
+                          <Eye size={13} />
+                          Pratinjau
+                        </button>
 
-                    {/* Mini Table Preview */}
-                    <div className={styles.tablePreviewWrapper}>
-                      <table className={styles.miniTable}>
-                        <tbody>
-                          {block.data.slice(0, 5).map((row, rIdx) => (
-                            <tr key={rIdx}>
-                              {row.slice(0, 6).map((cVal, cIdx) => (
-                                <td key={cIdx}>{String(cVal ?? '')}</td>
-                              ))}
-                              {row.length > 6 && <td>...</td>}
-                            </tr>
-                          ))}
-                          {block.data.length > 5 && (
-                            <tr>
-                              <td
-                                colSpan={Math.min(block.colCount, 7)}
-                                style={{ textAlign: 'center', color: '#94a3b8' }}
-                              >
-                                + {block.data.length - 5} baris lainnya
-                              </td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </table>
+                        <div className={styles.reorderGroup}>
+                          <button
+                            type="button"
+                            disabled={globalIdx === 0}
+                            onClick={() => handleMoveBlock(globalIdx, 'up')}
+                            className={styles.reorderBtn}
+                            title="Geser ke Atas"
+                          >
+                            <ArrowUp size={13} />
+                          </button>
+                          <button
+                            type="button"
+                            disabled={globalIdx === blocks.length - 1}
+                            onClick={() => handleMoveBlock(globalIdx, 'down')}
+                            className={styles.reorderBtn}
+                            title="Geser ke Bawah"
+                          >
+                            <ArrowDown size={13} />
+                          </button>
+                        </div>
+                      </div>
                     </div>
-
-                    {/* Footer: Tombol Geser Urutan */}
-                    <div className={styles.blockCardFooter}>
-                      <button
-                        type="button"
-                        onClick={() => handleMoveBlock(idx, 'up')}
-                        disabled={idx === 0}
-                        className={styles.reorderBtn}
-                        title="Geser ke atas"
-                      >
-                        <ArrowUp size={14} />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleMoveBlock(idx, 'down')}
-                        disabled={idx === blocks.length - 1}
-                        className={styles.reorderBtn}
-                        title="Geser ke bawah"
-                      >
-                        <ArrowDown size={14} />
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
-            {/* Action Bar */}
+            {/* Bottom Action Bar */}
             <div className={styles.actionBar}>
               <div className={styles.actionStats}>
-                <span className={styles.actionStatsHighlight}>{selectedCount}</span> dari{' '}
-                {blocks.length} Blok Dipilih • Estimasi{' '}
-                <span className={styles.actionStatsHighlight}>{previewPages.length} Halaman</span>{' '}
-                PDF
+                <span>Terpilih: </span>
+                <span className={styles.actionStatsHighlight}>
+                  {selectedCount} dari {blocks.length} Tabel
+                </span>
               </div>
 
-              <button
-                type="button"
-                onClick={handleGeneratePdf}
-                disabled={selectedCount === 0 || isGenerating}
-                className={styles.convertBtn}
-              >
-                <span>Konversi ke PDF</span>
-                <ArrowRight size={17} />
-              </button>
+              <div className={styles.actionButtonsGroup}>
+                {/* Unduh PDF Gabungan */}
+                <button
+                  type="button"
+                  disabled={selectedCount === 0 || isGenerating}
+                  onClick={handleGenerateCombinedPdf}
+                  className={styles.convertCombinedBtn}
+                >
+                  <FileText size={17} />
+                  Unduh PDF Gabungan
+                </button>
+
+                {/* Unduh ZIP Folder */}
+                <button
+                  type="button"
+                  disabled={selectedCount === 0 || isGenerating}
+                  onClick={handleGenerateZip}
+                  className={styles.convertZipBtn}
+                  title="Mengekstrak setiap tabel menjadi file PDF terpisah dalam folder per bulan"
+                >
+                  <Archive size={17} />
+                  Unduh Paket ZIP (Folder Bulan)
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal Pratinjau Detail Tabel */}
+        {previewingBlock && (
+          <div className={styles.progressModalOverlay} onClick={() => setPreviewingBlock(null)}>
+            <div
+              className={styles.detailModalCard}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className={styles.detailModalHeader}>
+                <div>
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: 800, margin: 0 }}>
+                    {previewingBlock.title}
+                  </h3>
+                  {previewingBlock.subtitle && (
+                    <span style={{ fontSize: '0.85rem', color: '#059669', fontWeight: 600 }}>
+                      {previewingBlock.subtitle}
+                    </span>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setPreviewingBlock(null)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: 'var(--text-muted)',
+                  }}
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className={styles.detailModalBody}>
+                <table className={styles.detailTable}>
+                  <tbody>
+                    {previewingBlock.cells.map((row, rIdx) => (
+                      <tr key={rIdx}>
+                        {row.map((cell, cIdx) => {
+                          if (cell.isMergedChild) return null;
+                          return (
+                            <td
+                              key={cIdx}
+                              colSpan={cell.colSpan || 1}
+                              rowSpan={cell.rowSpan || 1}
+                              style={{
+                                backgroundColor: cell.fillColor || undefined,
+                                color:
+                                  cell.fillColor && theme === 'dual_optimized'
+                                    ? '#0F172A'
+                                    : cell.textColor || undefined,
+                                fontWeight: cell.bold ? 700 : 400,
+                                textAlign: cell.align || 'left',
+                              }}
+                            >
+                              {cell.text}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className={styles.detailModalFooter}>
+                <button
+                  type="button"
+                  onClick={() => handleDownloadSinglePdf(previewingBlock)}
+                  className={styles.convertCombinedBtn}
+                >
+                  <Download size={15} />
+                  Unduh PDF Halaman Ini
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPreviewingBlock(null)}
+                  className={styles.closeModalBtn}
+                >
+                  Tutup
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -546,59 +869,52 @@ export default function ExcelToPdfWorkspace() {
         {isGenerating && (
           <div className={styles.progressModalOverlay}>
             <div className={styles.progressCard}>
-              <FileSpreadsheet size={36} color="#10b981" />
-              <div style={{ fontWeight: 700, fontSize: '1.1rem' }}>
-                Mengonversi Excel ke Dokumen PDF
+              <div className={styles.uploadIconCircle} style={{ margin: 0 }}>
+                <Sparkles size={32} />
               </div>
+              <div className={styles.progressPercentText}>{progress.percent}%</div>
               <div className={styles.progressTrack}>
-                <div
-                  className={styles.progressBar}
-                  style={{ width: `${progress.percent}%` }}
-                />
+                <div className={styles.progressBar} style={{ width: `${progress.percent}%` }} />
               </div>
               <div className={styles.progressStatusText}>{progress.status}</div>
             </div>
           </div>
         )}
 
-        {/* Modal Sukses Unduh Dokumen */}
-        {resultPdfUrl && (
-          <div className={styles.progressModalOverlay}>
-            <div className={styles.successModalCard}>
+        {/* Modal Sukses Download */}
+        {resultDownloadUrl && !isGenerating && (
+          <div className={styles.progressModalOverlay} onClick={() => setResultDownloadUrl(null)}>
+            <div
+              className={styles.successModalCard}
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className={styles.successIconBadge}>
-                <CheckCircle2 size={36} />
+                {resultType === 'zip' ? <Archive size={34} /> : <CheckCircle2 size={34} />}
               </div>
               <div>
                 <h3 style={{ fontSize: '1.35rem', fontWeight: 800, marginBottom: '0.35rem' }}>
-                  Dokumen PDF Berhasil Dibuat!
+                  {resultType === 'zip' ? 'Arsip ZIP Siap Diunduh!' : 'Dokumen PDF Selesai Dibuat!'}
                 </h3>
-                <p style={{ color: '#64748b', fontSize: '0.9rem' }}>
-                  Ukuran Berkas: <strong>{resultPdfSize}</strong> • {previewPages.length} Halaman
+                <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', margin: 0 }}>
+                  {resultFileName} ({resultSize})
                 </p>
               </div>
 
               <a
-                href={resultPdfUrl}
-                download={`${workbook?.fileName.replace(/\.[^/.]+$/, '') || 'excel'}_converted.pdf`}
+                href={resultDownloadUrl}
+                download={resultFileName}
                 className={styles.downloadCtaBtn}
               >
                 <Download size={18} />
-                <span>Unduh Dokumen PDF</span>
+                Unduh Berkas Sekarang
               </a>
 
               <button
                 type="button"
-                onClick={() => setResultPdfUrl(null)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: '#64748b',
-                  fontSize: '0.85rem',
-                  cursor: 'pointer',
-                  textDecoration: 'underline',
-                }}
+                onClick={() => setResultDownloadUrl(null)}
+                className={styles.closeModalBtn}
               >
-                Tutup & Lanjutkan Edit
+                Kembali ke Editor
               </button>
             </div>
           </div>
@@ -606,8 +922,4 @@ export default function ExcelToPdfWorkspace() {
       </div>
     </div>
   );
-}
-
-function headerActionsClass(styles: any) {
-  return styles.headerActions || '';
 }
